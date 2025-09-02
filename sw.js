@@ -1,4 +1,4 @@
-const CACHE = "budget-pwa-v3";
+const CACHE = "budget-pwa-v4";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -6,12 +6,10 @@ const CORE_ASSETS = [
   "./icons/pwa-192.png",
   "./icons/pwa-512.png"
 ];
-
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE_ASSETS)));
   self.skipWaiting();
 });
-
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -20,11 +18,9 @@ self.addEventListener("activate", (event) => {
   );
   self.clients.claim();
 });
-
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
-
   if (url.origin === location.origin) {
     event.respondWith(
       caches.match(req).then((cached) => {
