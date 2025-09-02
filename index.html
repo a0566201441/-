@@ -51,6 +51,21 @@
     #delta-chart-wrap{height:240px;position:relative;margin-top:16px}
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
+<style id="mobile-ios-stack-v2">
+@media (max-width: 430px) {
+  #rows { width: 100%; table-layout: auto; border-collapse: separate; border-spacing: 0; }
+  #rows thead { display: none; }
+  #rows tr { display: block; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+             border-radius: 12px; padding: 10px; margin: 10px 0; }
+  #rows td, #rows th { display: block; width: 100%; white-space: normal; word-break: break-word; overflow-wrap: anywhere; padding: 6px 0; }
+  #rows input, #rows select, #rows textarea { width: 100%; max-width: 100%; box-sizing: border-box; }
+  /* المبلغ يبقى مضغوط وواضح */
+  #rows td:nth-child(2) { display: flex; justify-content: space-between; gap: 8px; }
+  #rows td:nth-child(2) input { width: 40%; min-width: 7ch; text-align: end; }
+  /* الأزرار أصغر قليلًا */
+  #rows td:last-child button { transform: scale(0.95); }
+}
+</style>
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
@@ -166,7 +181,7 @@
     </div>
     <label>المبلغ المخطط</label><input id="planned" type="number" />
     <label>المدفوع حتى الآن</label><input id="paid" type="number" />
-    <button id="add" type="button" class="primary" style="margin-top:12px">➕ إضافة بند</button>
+    <button id="add" type="button" class="primary" style="margin-top:12px" onclick="return addItemInline(event)" ontouchend="return addItemInline(event)">➕ إضافة بند</button>
 
     <table class="main-table">
       <thead>
