@@ -17,7 +17,7 @@
     .primary{background:#1e90ff;color:#fff}
     .ghost{background:transparent;border:1px solid #2a3a52;color:#cbd5e1}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#132032;color:#9cc2ff;font-size:.85rem}
-    .totals{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+    .totals{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr)*/;gap:12px}
     .totals div{background:#0f141c;border:1px solid #1f2a3a;border-radius:12px;padding:12px;text-align:center}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .row > div { margin-left: 15px; margin-right: 15px; }
@@ -171,7 +171,7 @@
     </div>
     <label>المبلغ المخطط</label><input id="planned" type="number" />
     <label>المدفوع حتى الآن</label><input id="paid" type="number" />
-    <button id="add" type="button" class="primary" style="margin-top:12px" onclick="return addItemInline(event)" ontouchend="return addItemInline(event)">➕ إضافة بند</button>
+    <button id="add" type="button" class="primary" style="margin-top:12px">➕ إضافة بند</button>
 
     <table class="main-table">
       <thead>
@@ -260,7 +260,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const $=id=>document.getElementById(id);
+    const $=id=>document.getElementById(id*/;
     const STORE_KEY='budget-mini-v5';
     const HISTORY_KEY='budget-history-v5';
     const TEMPLATES_KEY='budget-templates-v4'; // القوالب كما هي
@@ -269,41 +269,41 @@
 
     let state={salary:0,items:[],extras:[],investments:[]};
     // جرّب تحميل إصدارات قديمة إن وُجدت
-    const legacyStoreV4 = JSON.parse(localStorage.getItem('budget-mini-v4')||'null');
+    const legacyStoreV4 = JSON.parse(localStorage.getItem('budget-mini-v4')||'null'*/;
     if(!localStorage.getItem(STORE_KEY) && legacyStoreV4){
       state = { ...legacyStoreV4, investments: legacyStoreV4.investments || [] };
-      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORE_KEY, JSON.stringify(state)*/;
     }
 
     // ضمان ظهور خيارات المصاريف حتى في حالات Safari/iOS
 
     // ضمان تعبئة كل القوائم المنسدلة المهمة (الشهور، الفئات، القوالب، الأرشيف)
     function ensureSelectPopulated(id, fillerFn, fallbackBuilder) {
-      const sel = $(id);
+      const sel = $(id*/;
       let tries = 0;
       const tick = () => {
         tries++;
         try {
           if (sel && sel.options && sel.options.length === 0) {
-            if (typeof fillerFn === 'function') fillerFn();
+            if (typeof fillerFn === 'function') fillerFn(*/;
           }
           if (sel && sel.options && sel.options.length === 0 && typeof fallbackBuilder === 'function') {
-            const opts = fallbackBuilder();
+            const opts = fallbackBuilder(*/;
             if (Array.isArray(opts) && opts.length) {
               opts.forEach(o => {
-                const opt = document.createElement('option');
+                const opt = document.createElement('option'*/;
                 opt.value = o.value;
                 opt.textContent = o.text;
-                sel.appendChild(opt);
-              });
+                sel.appendChild(opt*/;
+              }*/;
             }
           }
         } catch(e){}
         if (sel && sel.options && sel.options.length === 0 && tries < 6) {
-          setTimeout(tick, 200);
+          setTimeout(tick, 200*/;
         }
       };
-      setTimeout(tick, 120);
+      setTimeout(tick, 120*/;
     }
 
     function runEnsures(){
@@ -312,32 +312,32 @@
         {value:'04', text:'أبريل'},{value:'05', text:'مايو'},{value:'06', text:'يونيو'},
         {value:'07', text:'يوليو'},{value:'08', text:'أغسطس'},{value:'09', text:'سبتمبر'},
         {value:'10', text:'أكتوبر'},{value:'11', text:'نوفمبر'},{value:'12', text:'ديسمبر'},
-      ]);
-      ensureSelectPopulated('name', refreshCats, () => (defaultCats||[]).map(c=>({value:c,text:c})) );
-      ensureSelectPopulated('templates-select', refreshTemplates, () => [{value:'', text:'— لا توجد قوالب —'}]);
-      ensureSelectPopulated('history-select', refreshHistorySelect, () => [{value:'', text:'— لا يوجد أرشيف —'}]);
+      ]*/;
+      ensureSelectPopulated('name', refreshCats, () => (defaultCats||[]).map(c=>({value:c,text:c})) */;
+      ensureSelectPopulated('templates-select', refreshTemplates, () => [{value:'', text:'— لا توجد قوالب —'}]*/;
+      ensureSelectPopulated('history-select', refreshHistorySelect, () => [{value:'', text:'— لا يوجد أرشيف —'}]*/;
     }
 
     function ensureCatsRetries() {
-      const sel = $('name');
+      const sel = $('name'*/;
       let attempts = 0;
       const tick = () => {
         attempts++;
         if (sel && sel.options && sel.options.length === 0) {
-          try { refreshCats(); } catch(e){}
+          try { refreshCats(*/; } catch(e){}
         }
         if (sel && sel.options && sel.options.length === 0 && attempts < 5) {
-          setTimeout(tick, 200);
+          setTimeout(tick, 200*/;
         }
       };
-      setTimeout(tick, 150);
+      setTimeout(tick, 150*/;
     }
 
     let budgetHistory = load(HISTORY_KEY) || {};
     // ترقية الأرشيف القديم إن وجد (v4)
-    const legacyHistoryV4 = JSON.parse(localStorage.getItem('budget-history-v4')||'null');
+    const legacyHistoryV4 = JSON.parse(localStorage.getItem('budget-history-v4')||'null'*/;
     if(!Object.keys(budgetHistory).length && legacyHistoryV4){
-      budgetHistory = legacyHistoryV4; save(HISTORY_KEY,budgetHistory);
+      budgetHistory = legacyHistoryV4; save(HISTORY_KEY,budgetHistory*/;
     }
 
     let templates = load(TEMPLATES_KEY) || {};
@@ -350,21 +350,21 @@
     function save(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
     function persist(){ save(STORE_KEY,state) }
 
-    function normalizeCat(s){ return (s||'').trim().replace(/\s+/g,' '); }
+    function normalizeCat(s){ return (s||'').trim().replace(/\s+/g,' '*/; }
 
-    function monthNow(){ const d=new Date();const m=(d.getMonth()+1).toString().padStart(2,'0');return `${d.getFullYear()}-${m}`; }
+    function monthNow(){ const d=new Date(*/;const m=(d.getMonth()+1).toString().padStart(2,'0'*/;return `${d.getFullYear()}-${m}`; }
 
     // الشهور
     const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     function fillMonths(){
-      const sel=$('month-select'); sel.innerHTML='';
-      months.forEach((m,i)=>{ const v=(i+1).toString().padStart(2,'0'); const opt=document.createElement('option'); opt.value=v; opt.textContent=m; sel.appendChild(opt); });
+      const sel=$('month-select'*/; sel.innerHTML='';
+      months.forEach((m,i)=>{ const v=(i+1).toString().padStart(2,'0'*/; const opt=document.createElement('option'*/; opt.value=v; opt.textContent=m; sel.appendChild(opt*/; }*/;
     }
 
     // دالة لإرجاع اسم الشهر الحالي المختار من أعلى الصفحة
     function currentMonthName(){
       try {
-        const idx = Math.max(0, (parseInt($('month-select').value || (new Date().getMonth()+1), 10) - 1));
+        const idx = Math.max(0, (parseInt($('month-select').value || (new Date().getMonth()+1), 10) - 1)*/;
         return months[idx] || '';
       } catch { return ''; }
     }
@@ -372,40 +372,40 @@
     // الفئات الافتراضية + المخصصة
     const defaultCats=['سكن','كهرباء','ماء','إنترنت','غاز','اتصالات','سوبرماركت','مطاعم','ترفيه','وقود','مواصلات','تعليم','صحة','ملابس','هدايا','جمعية','أقساط','صدقات','أخرى'];
     function visibleCats(){
-      const delSet = new Set((deletedCats||[]).map(normalizeCat));
-      return [...new Set([...defaultCats, ...customCats])].filter(c=>!delSet.has(normalizeCat(c)));
+      const delSet = new Set((deletedCats||[]).map(normalizeCat)*/;
+      return [...new Set([...defaultCats, ...customCats])].filter(c=>!delSet.has(normalizeCat(c))*/;
     }
     function refreshCats(){
-      const sel=$('name'); sel.innerHTML='';
-      let cats = visibleCats();
+      const sel=$('name'*/; sel.innerHTML='';
+      let cats = visibleCats(*/;
       if(!Array.isArray(cats) || cats.length === 0){ cats = [...defaultCats]; }
       cats.forEach(c=>{
-        const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt);
-      });
-      sel.value = cats.includes('أخرى') ? 'أخرى' : (cats[0]||'');
+        const opt=document.createElement('option'*/; opt.value=c; opt.textContent=c; sel.appendChild(opt*/;
+      }*/;
+      sel.value = cats.includes('أخرى') ? 'أخرى' : (cats[0]||''*/;
     }
     function addCustomCatIfNeeded(nameRaw){
-      const name = normalizeCat(nameRaw);
+      const name = normalizeCat(nameRaw*/;
       if(!name || name==='أخرى') return;
       if(!customCats.map(normalizeCat).includes(name)){
-        customCats.push(name);
-        save(CATS_KEY, customCats);
+        customCats.push(name*/;
+        save(CATS_KEY, customCats*/;
       }
-      deletedCats = (deletedCats||[]).map(normalizeCat).filter(d=>d!==name);
-      save(DELETED_CATS_KEY, deletedCats);
-      refreshCats();
+      deletedCats = (deletedCats||[]).map(normalizeCat).filter(d=>d!==name*/;
+      save(DELETED_CATS_KEY, deletedCats*/;
+      refreshCats(*/;
       $('name').value = name;
     }
     function deleteSelectedCat(){
-      const c = normalizeCat($('name').value);
-      if(!c){ alert('لا توجد فئة محددة'); return; }
-      if(c==='أخرى'){ alert('لا يمكن حذف فئة "أخرى"'); return; }
+      const c = normalizeCat($('name').value*/;
+      if(!c){ alert('لا توجد فئة محددة'*/; return; }
+      if(c==='أخرى'){ alert('لا يمكن حذف فئة "أخرى"'*/; return; }
       if(!(deletedCats||[]).map(normalizeCat).includes(c)){
-        deletedCats.push(c);
+        deletedCats.push(c*/;
       }
-      save(DELETED_CATS_KEY, deletedCats);
-      refreshCats();
-      alert(`تم حذف الفئة "${c}" من القائمة. لا تتأثر البنود المُضافة سابقًا.`);
+      save(DELETED_CATS_KEY, deletedCats*/;
+      refreshCats(*/;
+      alert(`تم حذف الفئة "${c}" من القائمة. لا تتأثر البنود المُضافة سابقًا.`*/;
     }
 
     // الحالة
@@ -418,22 +418,22 @@
     function updateTotals(){
       // المصروفات
       let tPlanned=0,tPaid=0;
-      state.items.forEach(i=>{ tPlanned+=(+i.planned||0); tPaid+=(+i.paid||0); });
-      const extrasSum = state.extras.reduce((a,e)=>a+(+e.amount||0),0);
+      state.items.forEach(i=>{ tPlanned+=(+i.planned||0*/; tPaid+=(+i.paid||0*/; }*/;
+      const extrasSum = state.extras.reduce((a,e)=>a+(+e.amount||0),0*/;
       $('t_planned').textContent=tPlanned;
       $('t_paid').textContent=tPaid;
-      $('t_due').textContent=Math.max(0,tPlanned-tPaid);
+      $('t_due').textContent=Math.max(0,tPlanned-tPaid*/;
       $('t_balance').textContent=(+state.salary||0)+extrasSum - tPaid;
 
-      const sal2=$('salary2'); if(sal2) sal2.value = state.salary ? state.salary : '';
+      const sal2=$('salary2'*/; if(sal2) sal2.value = state.salary ? state.salary : '';
     }
 
     // ====== عرض المصروفات ======
     function renderExpenses(){
-      const tb=$('rows'); tb.innerHTML='';
+      const tb=$('rows'*/; tb.innerHTML='';
       state.items.forEach((it)=>{
-        const st=statusOf(it);
-        const tr=document.createElement('tr');
+        const st=statusOf(it*/;
+        const tr=document.createElement('tr'*/;
         tr.innerHTML=`
           <td><input type="text" value="${it.name||''}" class="name-input"></td>
           <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input"></td>
@@ -448,118 +448,118 @@
           </td>
         `;
 
-        const nameInp=tr.querySelector('.name-input');
-        const pInp=tr.querySelector('.planned-input');
-        const paInp=tr.querySelector('.paid-input');
-        const dueCell=tr.querySelector('.due');
-        const statusCell=tr.querySelector('.status');
-        const payBtn=tr.querySelector('.pay-one');
-        const paidMark=tr.querySelector('.paid-mark');
-        const delBtn=tr.querySelector('.del');
-        const subBtn=tr.querySelector('.sub-btn');
+        const nameInp=tr.querySelector('.name-input'*/;
+        const pInp=tr.querySelector('.planned-input'*/;
+        const paInp=tr.querySelector('.paid-input'*/;
+        const dueCell=tr.querySelector('.due'*/;
+        const statusCell=tr.querySelector('.status'*/;
+        const payBtn=tr.querySelector('.pay-one'*/;
+        const paidMark=tr.querySelector('.paid-mark'*/;
+        const delBtn=tr.querySelector('.del'*/;
+        const subBtn=tr.querySelector('.sub-btn'*/;
 
         if(!it.subItems) it.subItems=[];
 
         function refreshRow(){
-          const st=statusOf(it);
-          dueCell.textContent=Math.max(0,(+it.planned||0)-(+it.paid||0));
+          const st=statusOf(it*/;
+          dueCell.textContent=Math.max(0,(+it.planned||0)-(+it.paid||0)*/;
           statusCell.textContent=st.text;
           statusCell.className='status '+st.cls;
           paidMark.style.display = (st.text==='مدفوع') ? 'inline-block' : 'none';
-          updateTotals(); persist();
+          updateTotals(*/; persist(*/;
         }
 
-        nameInp.addEventListener('input',e=>{ it.name=normalizeCat(e.target.value); persist(); });
-        pInp.addEventListener('input',e=>{ it.planned=+e.target.value||0; refreshRow(); });
-        paInp.addEventListener('input',e=>{ it.paid=+e.target.value||0; refreshRow(); });
+        nameInp.addEventListener('input',e=>{ it.name=normalizeCat(e.target.value*/; persist(*/; }*/;
+        pInp.addEventListener('input',e=>{ it.planned=+e.target.value||0; refreshRow(*/; }*/;
+        paInp.addEventListener('input',e=>{ it.paid=+e.target.value||0; refreshRow(*/; }*/;
 
         payBtn.addEventListener('click',()=>{
           it.paid=+it.planned||0;
           paInp.value=it.paid;
-          refreshRow();
-        });
+          refreshRow(*/;
+        }*/;
 
         delBtn.addEventListener('click',()=>{
-          state.items = state.items.filter(x=>x!==it);
-          renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
-        });
+          state.items = state.items.filter(x=>x!==it*/;
+          renderExpenses(*/; updateTotals(*/; persist(*/; alert('تمت إضافة البند ✅'*/;
+        }*/;
 
         subBtn.addEventListener('click',()=>{
-          const subName=normalizeCat(prompt('اسم التفصيل:')||''); if(!subName) return;
+          const subName=normalizeCat(prompt('اسم التفصيل:')||''*/; if(!subName) return;
           const subAmount=parseFloat(prompt('المبلغ لهذا التفصيل:'))||0;
-          it.subItems.push({name:subName, amount:subAmount});
+          it.subItems.push({name:subName, amount:subAmount}*/;
           it.paid=(+it.paid||0)+subAmount;
           paInp.value=it.paid;
-          renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
-        });
+          renderExpenses(*/; updateTotals(*/; persist(*/; alert('تمت إضافة البند ✅'*/;
+        }*/;
 
-        tb.appendChild(tr);
+        tb.appendChild(tr*/;
 
         if (it.subItems && it.subItems.length) {
-          const row = document.createElement('tr');
-          const cell = document.createElement('td');
+          const row = document.createElement('tr'*/;
+          const cell = document.createElement('td'*/;
           cell.colSpan = 6;
 
-          const subTable = document.createElement('table');
+          const subTable = document.createElement('table'*/;
           subTable.className = 'sub-table';
           subTable.innerHTML = `
             <thead><tr><th>التفصيل</th><th>المبلغ</th><th>إجراء</th></tr></thead>
             <tbody></tbody>
           `;
-          const subBody = subTable.querySelector('tbody');
+          const subBody = subTable.querySelector('tbody'*/;
           it.subItems.forEach((s, idx) => {
-            const subTr = document.createElement('tr');
+            const subTr = document.createElement('tr'*/;
             subTr.innerHTML = `
               <td>${s.name}</td>
               <td>${s.amount}</td>
               <td><button class="danger">❌ حذف</button></td>
             `;
             subTr.querySelector('button').addEventListener('click', () => {
-              it.subItems.splice(idx, 1);
-              it.paid = Math.max(0, (+it.paid||0) - (+s.amount||0));
-              renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
-            });
-            subBody.appendChild(subTr);
-          });
+              it.subItems.splice(idx, 1*/;
+              it.paid = Math.max(0, (+it.paid||0) - (+s.amount||0)*/;
+              renderExpenses(*/; updateTotals(*/; persist(*/; alert('تمت إضافة البند ✅'*/;
+            }*/;
+            subBody.appendChild(subTr*/;
+          }*/;
 
-          cell.appendChild(subTable);
-          row.appendChild(cell);
-          tb.appendChild(row);
+          cell.appendChild(subTable*/;
+          row.appendChild(cell*/;
+          tb.appendChild(row*/;
         }
-      });
+      }*/;
     }
 
     // ====== عرض الدخل الإضافي ======
     function renderExtras(){
-      const tb=$('extras-rows'); tb.innerHTML='';
+      const tb=$('extras-rows'*/; tb.innerHTML='';
       state.extras.forEach((ex, idx)=>{
-        const tr=document.createElement('tr');
+        const tr=document.createElement('tr'*/;
         tr.innerHTML = `
           <td>${ex.name}</td>
           <td class="col-paid"><input type="number" value="${ex.amount||0}" class="extra-amount-input"></td>
           <td><button class="danger del-extra">حذف</button></td>
         `;
-        const amountInp = tr.querySelector('.extra-amount-input');
-        const delBtn = tr.querySelector('.del-extra');
+        const amountInp = tr.querySelector('.extra-amount-input'*/;
+        const delBtn = tr.querySelector('.del-extra'*/;
 
         amountInp.addEventListener('input', e=>{
           ex.amount = +e.target.value || 0;
-          updateTotals(); persist();
-        });
+          updateTotals(*/; persist(*/;
+        }*/;
         delBtn.addEventListener('click',()=>{
-          state.extras.splice(idx,1);
-          renderExtras(); updateTotals(); persist();
-        });
+          state.extras.splice(idx,1*/;
+          renderExtras(*/; updateTotals(*/; persist(*/;
+        }*/;
 
-        tb.appendChild(tr);
-      });
+        tb.appendChild(tr*/;
+      }*/;
     }
 
     // ====== الاستثمارات (قائمة مستقلة) ======
     function renderInvestments(){
-      const tb=$('inv-rows'); if(!tb) return; tb.innerHTML='';
+      const tb=$('inv-rows'*/; if(!tb) return; tb.innerHTML='';
       state.investments.forEach((inv, idx)=>{
-        const tr=document.createElement('tr');
+        const tr=document.createElement('tr'*/;
         tr.innerHTML = `
           <td><input type="text" value="${inv.type||''}" class="inv-type-input"></td>
           <td><input type="text" value="${inv.dest||''}" class="inv-dest-input"></td>
@@ -569,116 +569,116 @@
           <td><textarea class="inv-notes-input" style="min-height:48px">${inv.notes||''}</textarea></td>
           <td><button class="danger del-inv">حذف</button></td>
         `;
-        tr.querySelector('.inv-type-input').addEventListener('input',e=>{ inv.type=normalizeCat(e.target.value); persist(); });
-        tr.querySelector('.inv-dest-input').addEventListener('input',e=>{ inv.dest=normalizeCat(e.target.value); persist(); });
-        tr.querySelector('.inv-amount-input').addEventListener('input',e=>{ inv.amount=+e.target.value||0; persist(); });
-        tr.querySelector('.inv-source-input').addEventListener('input',e=>{ inv.source=normalizeCat(e.target.value); persist(); });
-        tr.querySelector('.inv-notes-input').addEventListener('input',e=>{ inv.notes=e.target.value; persist(); });
+        tr.querySelector('.inv-type-input').addEventListener('input',e=>{ inv.type=normalizeCat(e.target.value*/; persist(*/; }*/;
+        tr.querySelector('.inv-dest-input').addEventListener('input',e=>{ inv.dest=normalizeCat(e.target.value*/; persist(*/; }*/;
+        tr.querySelector('.inv-amount-input').addEventListener('input',e=>{ inv.amount=+e.target.value||0; persist(*/; }*/;
+        tr.querySelector('.inv-source-input').addEventListener('input',e=>{ inv.source=normalizeCat(e.target.value*/; persist(*/; }*/;
+        tr.querySelector('.inv-notes-input').addEventListener('input',e=>{ inv.notes=e.target.value; persist(*/; }*/;
         tr.querySelector('.del-inv').addEventListener('click',()=>{
-          state.investments.splice(idx,1);
-          renderInvestments(); persist();
-        });
-        tb.appendChild(tr);
-      });
+          state.investments.splice(idx,1*/;
+          renderInvestments(*/; persist(*/;
+        }*/;
+        tb.appendChild(tr*/;
+      }*/;
     }
 
     function addInvestment(){
-      const type = normalizeCat($('inv-type').value||'');
-      const dest = normalizeCat($('inv-dest').value||'');
-      const amount = +($('inv-amount').value||0);
-      const source = normalizeCat($('inv-source').value||'');
+      const type = normalizeCat($('inv-type').value||''*/;
+      const dest = normalizeCat($('inv-dest').value||''*/;
+      const amount = +($('inv-amount').value||0*/;
+      const source = normalizeCat($('inv-source').value||''*/;
       const notes = $('inv-notes').value||'';
-      if(!type || !dest || amount<=0){ alert('أدخل نوع الاستثمار والوجهة والمبلغ.'); return; }
-      const addedMonth = currentMonthName(); // اسم الشهر المختار من أعلى الصفحة
-      state.investments.push({type,dest,amount,source,notes,addedMonth});
+      if(!type || !dest || amount<=0){ alert('أدخل نوع الاستثمار والوجهة والمبلغ.'*/; return; }
+      const addedMonth = currentMonthName(*/; // اسم الشهر المختار من أعلى الصفحة
+      state.investments.push({type,dest,amount,source,notes,addedMonth}*/;
       $('inv-type').value=''; $('inv-dest').value=''; $('inv-amount').value=''; $('inv-source').value=''; $('inv-notes').value='';
-      renderInvestments(); persist();
-      alert('تمت إضافة الاستثمار ✅');
+      renderInvestments(*/; persist(*/;
+      alert('تمت إضافة الاستثمار ✅'*/;
     }
 
     // ====== إضافة بند مصروف ======
     // مُعالج احتياطي للأزرار يعمل حتى لو فشل ربط الأحداث
     function addItemInline(e){
-      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch{}
-      try{ addItem(); }catch(err){ try{ console && console.error && console.error(err); }catch{} }
+      try{ if(e){ e.preventDefault(*/; e.stopPropagation(*/; } }catch{}
+      try{ addItem(*/; }catch(err){ try{ console && console.error && console.error(err*/; }catch{} }
       return false;
     }
     function addItem(){
-      try{ if(document.activeElement) document.activeElement.blur(); }catch{}
+      try{ if(document.activeElement) document.activeElement.blur(*/; }catch{}
 
-      const selEl = $('name'); const selVal = selEl && selEl.value ? selEl.value : '';
+      const selEl = $('name'*/; const selVal = selEl && selEl.value ? selEl.value : '';
       const customRaw = $('name-custom').value || '';
-      const custom = normalizeCat(customRaw);
+      const custom = normalizeCat(customRaw*/;
       const chosen = (selVal === 'أخرى' && custom) ? custom : selVal;
-      addCustomCatIfNeeded(chosen);
+      addCustomCatIfNeeded(chosen*/;
 
-      const plannedVal = +($('planned').value||0); const paidVal = +($('paid').value||0);
-      if(!chosen && plannedVal===0 && paidVal===0){ alert('اختر اسم المصروف أو اكتب مبلغًا.'); return; }
-      state.items.push({ name: chosen || 'غير مسمى', planned:plannedVal, paid:paidVal, subItems:[] });
+      const plannedVal = +($('planned').value||0*/; const paidVal = +($('paid').value||0*/;
+      if(!chosen && plannedVal===0 && paidVal===0){ alert('اختر اسم المصروف أو اكتب مبلغًا.'*/; return; }
+      state.items.push({ name: chosen || 'غير مسمى', planned:plannedVal, paid:paidVal, subItems:[] }*/;
       $('name-custom').value=''; $('planned').value=''; $('paid').value='';
-      renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
+      renderExpenses(*/; updateTotals(*/; persist(*/; alert('تمت إضافة البند ✅'*/;
     }
 
     // ====== قوالب (بدون الدخل الإضافي) + يشمل الراتب ======
     function saveCurrentAsTemplate(){
-      const tName = prompt('أدخل اسم القالب:'); if(!tName) return;
+      const tName = prompt('أدخل اسم القالب:'*/; if(!tName) return;
       const itemsOnly = state.items.map(i => ({
         name: i.name,
         planned: +i.planned || 0,
         paid: +i.paid || 0,
         subItems: Array.isArray(i.subItems) ? i.subItems.map(s => ({name:s.name, amount:+s.amount||0})) : []
-      }));
+      })*/;
       templates[tName] = { items: itemsOnly, salary: +state.salary || 0 };
-      save(TEMPLATES_KEY, templates);
-      refreshTemplates();
-      alert('تم حفظ القالب ✅');
+      save(TEMPLATES_KEY, templates*/;
+      refreshTemplates(*/;
+      alert('تم حفظ القالب ✅'*/;
     }
     function refreshTemplates(){
-      const sel=$('templates-select'); sel.innerHTML='';
-      Object.keys(templates).forEach(k=>{ const opt=document.createElement('option'); opt.value=k; opt.textContent=k; sel.appendChild(opt); });
+      const sel=$('templates-select'*/; sel.innerHTML='';
+      Object.keys(templates).forEach(k=>{ const opt=document.createElement('option'*/; opt.value=k; opt.textContent=k; sel.appendChild(opt*/; }*/;
     }
     function applyTemplate(){
       const k=$('templates-select').value;
       if(!k || !templates[k]) return;
-      state.items = JSON.parse(JSON.stringify(templates[k].items||[]));
+      state.items = JSON.parse(JSON.stringify(templates[k].items||[])*/;
       state.salary = +templates[k].salary || 0;
-      renderExpenses(); renderExtras(); updateTotals(); persist();
+      renderExpenses(*/; renderExtras(*/; updateTotals(*/; persist(*/;
     }
     function deleteTemplate(){
       const k=$('templates-select').value; if(!k) return;
-      if(confirm('حذف القالب؟')){ delete templates[k]; save(TEMPLATES_KEY, templates); refreshTemplates(); }
+      if(confirm('حذف القالب؟')){ delete templates[k]; save(TEMPLATES_KEY, templates*/; refreshTemplates(*/; }
     }
 
     // ====== دخل إضافي ======
     function addExtra(){
-      const name = normalizeCat($('extra-name').value||'');
+      const name = normalizeCat($('extra-name').value||''*/;
       const amount = +$('extra-amount').value||0;
-      if(!name || amount<=0){ alert('أدخل اسم الدخل ومبلغه'); return; }
-      state.extras.push({name, amount});
+      if(!name || amount<=0){ alert('أدخل اسم الدخل ومبلغه'*/; return; }
+      state.extras.push({name, amount}*/;
       $('extra-name').value=''; $('extra-amount').value='';
-      renderExtras(); updateTotals(); persist();
-      alert('تمت إضافة الدخل الإضافي ✅');
+      renderExtras(*/; updateTotals(*/; persist(*/;
+      alert('تمت إضافة الدخل الإضافي ✅'*/;
     }
 
     // ====== الأرشيف ======
     function computeTotalsFor(s){
-      const planned=s.items.reduce((a,b)=>a+(+b.planned||0),0);
-      const paid=s.items.reduce((a,b)=>a+(+b.paid||0),0);
-      const due=Math.max(0, planned-paid);
-      const extrasSum = (s.extras||[]).reduce((a,e)=>a+(+e.amount||0),0);
+      const planned=s.items.reduce((a,b)=>a+(+b.planned||0),0*/;
+      const paid=s.items.reduce((a,b)=>a+(+b.paid||0),0*/;
+      const due=Math.max(0, planned-paid*/;
+      const extrasSum = (s.extras||[]).reduce((a,e)=>a+(+e.amount||0),0*/;
       const balance=(+s.salary||0)+extrasSum - paid; // الاستثمارات لا تؤثر
       const completed=s.items.filter(i=>(+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0).length;
       const partial=s.items.filter(i=>(+i.paid||0) > 0 && (+i.paid||0) < (+i.planned||0)).length;
       const zeroPaid=s.items.filter(i=>!(+i.paid||0)).length;
       const execRate= planned>0 ? Math.round((paid/planned)*100) : 0;
-      const invested=(s.investments||[]).reduce((a,x)=>a+(+x.amount||0),0);
+      const invested=(s.investments||[]).reduce((a,x)=>a+(+x.amount||0),0*/;
       return {planned, paid, due, balance, completed, partial, zeroPaid, execRate, invested};
     }
 
     function periodFromInputs(){
-      const y = ($('year-input').value||'').trim();
+      const y = ($('year-input').value||'').trim(*/;
       const m = $('month-select').value || '';
-      if(!/^[0-9]{4}$/.test(y)){ alert('أدخل السنة بصيغة صحيحة'); return null; }
+      if(!/^[0-9]{4}$/.test(y)){ alert('أدخل السنة بصيغة صحيحة'*/; return null; }
       return `${y}-${m}`;
     }
 
@@ -689,8 +689,8 @@
     }
 
     function closeMonth(){
-      const period = periodFromInputs() || monthNow();
-      if(!state.items.length && !state.extras.length && !state.investments.length){ alert('لا توجد بيانات لحفظها'); return; }
+      const period = periodFromInputs() || monthNow(*/;
+      if(!state.items.length && !state.extras.length && !state.investments.length){ alert('لا توجد بيانات لحفظها'*/; return; }
       const snapshot = {
         period,
         salary:+state.salary||0,
@@ -705,25 +705,25 @@
           addedMonth: x.addedMonth || currentMonthName()
         }))
       };
-      snapshot.totals = computeTotalsFor(snapshot);
-      budgetHistory[period]=snapshot; save(HISTORY_KEY, budgetHistory);
-      refreshHistorySelect(period); renderHistory(); renderHistoryChart(); renderDeltaChart();
-      alert('تم حفظ الشهر في الأرشيف ✅');
+      snapshot.totals = computeTotalsFor(snapshot*/;
+      budgetHistory[period]=snapshot; save(HISTORY_KEY, budgetHistory*/;
+      refreshHistorySelect(period*/; renderHistory(*/; renderHistoryChart(*/; renderDeltaChart(*/;
+      alert('تم حفظ الشهر في الأرشيف ✅'*/;
     }
 
     function refreshHistorySelect(selectPeriod){
-      const sel=$('history-select'); sel.innerHTML='';
-      const periods=Object.keys(budgetHistory).sort().reverse();
+      const sel=$('history-select'*/; sel.innerHTML='';
+      const periods=Object.keys(budgetHistory).sort().reverse(*/;
       periods.forEach(p=>{
         const t = budgetHistory[p]?.totals || {planned:0,paid:0};
-        const mark = monthIndicator(t);
-        const opt=document.createElement('option'); opt.value=p; opt.textContent=`${p} ${mark}`; sel.appendChild(opt);
-      });
+        const mark = monthIndicator(t*/;
+        const opt=document.createElement('option'*/; opt.value=p; opt.textContent=`${p} ${mark}`; sel.appendChild(opt*/;
+      }*/;
       if(selectPeriod && periods.includes(selectPeriod)) sel.value=selectPeriod;
     }
 
     function renderHistory(){
-      const sel=$('history-select'); const wrap=$('history-table-wrap'); const kpis=$('history-kpis');
+      const sel=$('history-select'*/; const wrap=$('history-table-wrap'*/; const kpis=$('history-kpis'*/;
       if(!sel || !wrap || !kpis) return;
       const p=sel.value; if(!p || !budgetHistory[p]){ wrap.innerHTML='<p class="muted">لا يوجد شهر محدد.</p>'; kpis.innerHTML=''; return; }
       const snap=budgetHistory[p]; const t=snap.totals;
@@ -741,15 +741,15 @@
 
       let rows='';
       snap.items.forEach(i=>{
-        const due=Math.max(0,(+i.planned||0) - (+i.paid||0));
-        const st = (+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0 ? 'مدفوع' : ((+i.paid||0)>0 ? 'مدفوع جزئي' : 'غير مدفوع');
+        const due=Math.max(0,(+i.planned||0) - (+i.paid||0)*/;
+        const st = (+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0 ? 'مدفوع' : ((+i.paid||0)>0 ? 'مدفوع جزئي' : 'غير مدفوع'*/;
         rows += `<tr><td>${i.name}</td><td>${i.planned}</td><td>${i.paid}</td><td>${due}</td><td>${st}</td></tr>`;
         if(i.subItems && i.subItems.length){
-          i.subItems.forEach(s=>{ rows+=`<tr><td>↳ ${s.name}</td><td colspan=\"4\">${s.amount}</td></tr>` });
+          i.subItems.forEach(s=>{ rows+=`<tr><td>↳ ${s.name}</td><td colspan=\"4\">${s.amount}</td></tr>` }*/;
         }
-      });
+      }*/;
 
-      const exSum = (snap.extras||[]).reduce((a,e)=>a+(+e.amount||0),0);
+      const exSum = (snap.extras||[]).reduce((a,e)=>a+(+e.amount||0),0*/;
       if(exSum>0){
         rows += `<tr><td><span class="pill">دخل</span> مجموع الدخل الإضافي</td><td>—</td><td>${exSum}</td><td>—</td><td>دخل</td></tr>`;
       }
@@ -757,7 +757,7 @@
       // جدول الاستثمارات للأرشيف
       let invRows='';
       const invs = snap.investments||[];
-      const invTotal = invs.reduce((a,x)=>a+(+x.amount||0),0);
+      const invTotal = invs.reduce((a,x)=>a+(+x.amount||0),0*/;
       if(invs.length){
         invs.forEach(x=>{
           invRows += `<tr>
@@ -768,7 +768,7 @@
             <td>${x.addedMonth||''}</td>
             <td>${(x.notes||'').replace(/</g,'&lt;')}</td>
           </tr>`;
-        });
+        }*/;
         invRows += `<tr><td colspan="2"><strong>الإجمالي</strong></td><td><strong>${invTotal}</strong></td><td colspan="3">—</td></tr>`;
       } else {
         invRows = `<tr><td colspan="6" class="muted">لا توجد استثمارات مسجلة لهذا الشهر.</td></tr>`;
@@ -786,43 +786,43 @@
           <tbody>${invRows}</tbody>
         </table>
       `;
-      renderHistoryChart(); renderDeltaChart();
+      renderHistoryChart(*/; renderDeltaChart(*/;
     }
 
     // ======= الرسوم البيانية =======
     function buildSeries(){
       const hist = budgetHistory || {};
-      const periods = Object.keys(hist).sort();
+      const periods = Object.keys(hist).sort(*/;
       const labels=[], planned=[], paid=[], execRate=[];
       periods.forEach(p=>{
         const t=hist[p]?.totals; if(!t) return;
-        labels.push(p);
-        planned.push(+t.planned||0);
-        paid.push(+t.paid||0);
-        execRate.push((+t.planned||0)>0? Math.round((+t.paid/+t.planned)*100):0);
-      });
+        labels.push(p*/;
+        planned.push(+t.planned||0*/;
+        paid.push(+t.paid||0*/;
+        execRate.push((+t.planned||0)>0? Math.round((+t.paid/+t.planned)*100):0*/;
+      }*/;
       return {labels, planned, paid, execRate};
     }
 
     // المتبقي الحقيقي = الراتب + الدخل الإضافي - المدفوع (بدون تأثير الاستثمارات)
     function buildBalance(){
       const hist = budgetHistory || {};
-      const periods = Object.keys(hist).sort();
+      const periods = Object.keys(hist).sort(*/;
       const labels=[], balance=[], colors=[];
       periods.forEach(p=>{
         const t=hist[p]?.totals; if(!t) return;
-        const b = (+t.balance||0);
-        labels.push(p);
-        balance.push(b);
-        colors.push(b>=0 ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)');
-      });
+        const b = (+t.balance||0*/;
+        labels.push(p*/;
+        balance.push(b*/;
+        colors.push(b>=0 ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)'*/;
+      }*/;
       return {labels, balance, colors};
     }
 
     function renderHistoryChart(){
-      const ctx=$('history-chart'); if(!ctx) return;
-      const {labels, planned, paid, execRate} = buildSeries();
-      if(historyChart){ historyChart.destroy(); historyChart=null; }
+      const ctx=$('history-chart'*/; if(!ctx) return;
+      const {labels, planned, paid, execRate} = buildSeries(*/;
+      if(historyChart){ historyChart.destroy(*/; historyChart=null; }
       if(!labels.length) return;
 
       historyChart = new Chart(ctx, {
@@ -845,19 +845,19 @@
             y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { callback: v => v + '%' }, title: { display: true, text: '٪' }, suggestedMax: 120 }
           }
         }
-      });
+      }*/;
     }
 
     // الرسم السفلي: المتبقي حول خط 0 (أعلى = زيادة، أسفل = نقص)
     function renderDeltaChart(){
-      const ctx=$('delta-chart'); if(!ctx) return;
-      const {labels, balance, colors} = buildBalance();
-      if(deltaChart){ deltaChart.destroy(); deltaChart=null; }
+      const ctx=$('delta-chart'*/; if(!ctx) return;
+      const {labels, balance, colors} = buildBalance(*/;
+      if(deltaChart){ deltaChart.destroy(*/; deltaChart=null; }
       if(!labels.length) return;
 
-      const minVal = Math.min(0, ...balance);
-      const maxVal = Math.max(0, ...balance);
-      const maxAbs = Math.max(Math.abs(minVal), Math.abs(maxVal));
+      const minVal = Math.min(0, ...balance*/;
+      const maxVal = Math.max(0, ...balance*/;
+      const maxAbs = Math.max(Math.abs(minVal), Math.abs(maxVal)*/;
 
       deltaChart = new Chart(ctx, {
         type: 'bar',
@@ -883,120 +883,142 @@
           },
           interaction: { mode: 'index', intersect: false }
         }
-      });
+      }*/;
     }
 
     // تصدير/استيراد
-    function exportHistoryJSON(){ const blob=new Blob([JSON.stringify(budgetHistory,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='budget-history.json'; a.click(); URL.revokeObjectURL(url); }
+    function exportHistoryJSON(){ const blob=new Blob([JSON.stringify(budgetHistory,null,2)],{type:'application/json'}*/; const url=URL.createObjectURL(blob*/; const a=document.createElement('a'*/; a.href=url; a.download='budget-history.json'; a.click(*/; URL.revokeObjectURL(url*/; }
     function exportCSV(){
-      const periods=Object.keys(budgetHistory).sort();
+      const periods=Object.keys(budgetHistory).sort(*/;
       let csv='period,category,planned,paid,due,status\n';
       periods.forEach(p=>{
         const snap=budgetHistory[p];
         snap.items.forEach(i=>{
-          const due=Math.max(0,(+i.planned||0)-(+i.paid||0));
-          const status=((+i.paid||0) >= (+i.planned||0) && (+i.planned||0)>0)?'paid':((+i.paid||0)>0?'partial':'unpaid');
+          const due=Math.max(0,(+i.planned||0)-(+i.paid||0)*/;
+          const status=((+i.paid||0) >= (+i.planned||0) && (+i.planned||0)>0)?'paid':((+i.paid||0)>0?'partial':'unpaid'*/;
           csv += `${p},"${i.name}",${i.planned},${i.paid},${due},${status}\n`;
-        });
-      });
-      const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='budget-history.csv'; a.click(); URL.revokeObjectURL(url);
+        }*/;
+      }*/;
+      const blob=new Blob([csv],{type:'text/csv'}*/; const url=URL.createObjectURL(blob*/; const a=document.createElement('a'*/; a.href=url; a.download='budget-history.csv'; a.click(*/; URL.revokeObjectURL(url*/;
     }
     function importHistory(){
-      const fileInput=$('import-history'); const file=fileInput.files?.[0]; if(!file) return;
-      const reader=new FileReader();
-      reader.onload=()=>{ try{ const data=JSON.parse(reader.result); budgetHistory=data||{}; save(HISTORY_KEY,budgetHistory); refreshHistorySelect(); renderHistory(); renderHistoryChart(); renderDeltaChart(); alert('تم الاستيراد ✅'); }catch{ alert('ملف غير صالح'); } };
-      reader.readAsText(file);
+      const fileInput=$('import-history'*/; const file=fileInput.files?.[0]; if(!file) return;
+      const reader=new FileReader(*/;
+      reader.onload=()=>{ try{ const data=JSON.parse(reader.result*/; budgetHistory=data||{}; save(HISTORY_KEY,budgetHistory*/; refreshHistorySelect(*/; renderHistory(*/; renderHistoryChart(*/; renderDeltaChart(*/; alert('تم الاستيراد ✅'*/; }catch{ alert('ملف غير صالح'*/; } };
+      reader.readAsText(file*/;
     }
 
     function bind(){
       // مزامنة حقل الراتب الوحيد
       function syncSalary(val){
         state.salary = +val || 0;
-        updateTotals(); persist();
+        updateTotals(*/; persist(*/;
       }
-      const sal2=$('salary2'); if(sal2) sal2.addEventListener('input', e=> syncSalary(e.target.value));
+      const sal2=$('salary2'*/; if(sal2) sal2.addEventListener('input', e=> syncSalary(e.target.value)*/;
 
       // إدارة الفئات
       $('save-custom-cat').addEventListener('click', ()=>{
-        const custom = normalizeCat($('name-custom').value||'');
-        if(!custom){ alert('اكتب اسم الفئة أولاً'); return; }
-        addCustomCatIfNeeded(custom);
+        const custom = normalizeCat($('name-custom').value||''*/;
+        if(!custom){ alert('اكتب اسم الفئة أولاً'*/; return; }
+        addCustomCatIfNeeded(custom*/;
         $('name-custom').value='';
-        alert('تم حفظ الفئة ضمن الخيارات ✅');
-      });
-      $('delete-cat').addEventListener('click', deleteSelectedCat);
+        alert('تم حفظ الفئة ضمن الخيارات ✅'*/;
+      }*/;
+      $('delete-cat').addEventListener('click', deleteSelectedCat*/;
 
       // إضافة بند/دخل إضافي
       (function(){
-        const btn=$('add');
+        const btn=$('add'*/;
         if(btn){
-          const handler=(e)=>{ e.preventDefault(); e.stopPropagation(); addItem(); };
-          btn.addEventListener('click', handler, {passive:false});
-          btn.addEventListener('touchend', handler, {passive:false});
+          const handler=(e)=>{ e.preventDefault(*/; e.stopPropagation(*/; addItem(*/; };
+          btn.addEventListener('click', handler, {passive:false}*/;
+          btn/* removed touchend to prevent double fire */ /* handler, {passive:false}*/;
         }
-      })();
-      $('add-extra').addEventListener('click', addExtra);
+      })(*/;
+      $('add-extra').addEventListener('click', addExtra*/;
 
       // الاستثمارات
-      $('add-inv').addEventListener('click', addInvestment);
+      $('add-inv').addEventListener('click', addInvestment*/;
 
       // قوالب
-      $('save-template').addEventListener('click', saveCurrentAsTemplate);
-      $('apply-template').addEventListener('click', applyTemplate);
-      $('delete-template').addEventListener('click', deleteTemplate);
+      $('save-template').addEventListener('click', saveCurrentAsTemplate*/;
+      $('apply-template').addEventListener('click', applyTemplate*/;
+      $('delete-template').addEventListener('click', deleteTemplate*/;
 
       // الأرشيف
-      $('close-month').addEventListener('click', closeMonth);
-      $('history-select').addEventListener('change', ()=>{ renderHistory(); });
-      $('delete-month').addEventListener('click', deleteSelectedMonth);
+      $('close-month').addEventListener('click', closeMonth*/;
+      $('history-select').addEventListener('change', ()=>{ renderHistory(*/; }*/;
+      $('delete-month').addEventListener('click', deleteSelectedMonth*/;
 
       // عام
-      $('reset').addEventListener('click', ()=>{ if(confirm('تأكيد التفريغ؟')){ state={salary:0,items:[],extras:[],investments:[]}; renderExpenses(); renderExtras(); renderInvestments(); updateTotals(); persist(); } });
-      $('export-history').addEventListener('click', exportHistoryJSON);
-      $('export-csv').addEventListener('click', exportCSV);
-      $('import-history-btn').addEventListener('click', ()=> $('import-history').click());
-      $('import-history').addEventListener('change', importHistory);
+      $('reset').addEventListener('click', ()=>{ if(confirm('تأكيد التفريغ؟')){ state={salary:0,items:[],extras:[],investments:[]}; renderExpenses(*/; renderExtras(*/; renderInvestments(*/; updateTotals(*/; persist(*/; } }*/;
+      $('export-history').addEventListener('click', exportHistoryJSON*/;
+      $('export-csv').addEventListener('click', exportCSV*/;
+      $('import-history-btn').addEventListener('click', ()=> $('import-history').click()*/;
+      $('import-history').addEventListener('change', importHistory*/;
     }
 
     function deleteSelectedMonth(){
-      const sel=$('history-select'); if(!sel || !sel.value) return;
+      const sel=$('history-select'*/; if(!sel || !sel.value) return;
       if(confirm(`حذف شهر ${sel.value} من الأرشيف؟`)){
-        delete budgetHistory[sel.value]; save(HISTORY_KEY,budgetHistory); refreshHistorySelect(); renderHistory(); renderHistoryChart(); renderDeltaChart();
+        delete budgetHistory[sel.value]; save(HISTORY_KEY,budgetHistory*/; refreshHistorySelect(*/; renderHistory(*/; renderHistoryChart(*/; renderDeltaChart(*/;
       }
     }
 
     function init(){
-      fillMonths();
-      const saved = load(STORE_KEY);
+      fillMonths(*/;
+      const saved = load(STORE_KEY*/;
       if(saved){ state=saved; }
       if(!Array.isArray(state.investments)) state.investments=[]; // لضمان الحقل
-      $('year-input').value = (new Date()).getFullYear();
-      $('month-select').value = (new Date().getMonth()+1).toString().padStart(2,'0');
+      $('year-input').value = (new Date()).getFullYear(*/;
+      $('month-select').value = (new Date().getMonth()+1).toString().padStart(2,'0'*/;
 
-      refreshCats();
-      refreshTemplates();
-      refreshHistorySelect();
-      renderExpenses();
-      renderExtras();
-      renderInvestments();
-      renderHistory();
-      renderHistoryChart();
-      renderDeltaChart();
-      updateTotals();
-      ensureCatsRetries();
-      runEnsures();
-      bind();
+      refreshCats(*/;
+      refreshTemplates(*/;
+      refreshHistorySelect(*/;
+      renderExpenses(*/;
+      renderExtras(*/;
+      renderInvestments(*/;
+      renderHistory(*/;
+      renderHistoryChart(*/;
+      renderDeltaChart(*/;
+      updateTotals(*/;
+      ensureCatsRetries(*/;
+      runEnsures(*/;
+      bind(*/;
       setTimeout(()=>{
         try{
-          const sel=$('name');
+          const sel=$('name'*/;
           if(sel && (!sel.options || sel.options.length===0)){
-            refreshCats();
+            refreshCats(*/;
           }
         }catch{}
-      }, 200);
+      }, 200*/;
     }
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', init*/;
   </script>
+<script>
+(function(){
+  function bindOnce(){
+    var btn = document.getElementById('add');
+    if(!btn) return;
+    if(btn.dataset && btn.dataset.bound === '1') return;
+    if(btn.dataset) btn.dataset.bound = '1';
+    var handler = function(e){
+      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch(_){}
+      if (typeof window.addItem === 'function') { return window.addItem(e); }
+      if (typeof window.addItemInline === 'function') { return window.addItemInline(e); }
+      return false;
+    };
+    btn.addEventListener('click', handler, {passive:false});
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', bindOnce, {once:true});
+  }else{
+    bindOnce();
+  }
+})();
+</script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
