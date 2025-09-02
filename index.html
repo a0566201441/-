@@ -992,34 +992,5 @@
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
-<script>
-(function(){
-  function bindOnce(){
-    var btn = document.getElementById('add');
-    if(!btn) return;
-    if(btn.dataset && btn.dataset.bound === '1') return;
-    if(btn.dataset) btn.dataset.bound = '1';
-    var handler = function(e){
-      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch(_){}
-      if (typeof window.addItem === 'function') { return window.addItem(e); }
-      if (typeof window.addItemInline === 'function') { return window.addItemInline(e); }
-      return false;
-    };
-    btn.addEventListener('click', handler, {passive:false});
-  }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', bindOnce, {once:true});
-  }else{
-    bindOnce();
-  }
-})();
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").catch(console.error);
-  });
-}
-</script>
 </body>
 </html>
