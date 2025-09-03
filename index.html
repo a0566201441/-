@@ -51,96 +51,88 @@
     #delta-chart-wrap{height:240px;position:relative;margin-top:16px}
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
-<style id="mobile-2col-3rows-v2">
+<style id="mobile-v17">
 @media (max-width: 430px) {
-  /* لا رؤوس جدول في الجوال */
+  html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
-
-  /* ضبط الجدول ومنع أي تمدد أفقي */
-  #rows { width: 100%; table-layout: auto; border-collapse: separate; border-spacing: 0; direction: rtl; }
+  #rows { width:100%; table-layout:auto; border-collapse:separate; border-spacing:0; direction: rtl; }
   #rows, #rows * { max-width: 100%; box-sizing: border-box; }
 
-  /* كل بند = شبكة 3 صفوف × عمودين */
+  /* Grid: Row1 name|planned, Row2 paid|due, Row3 status|actions, Row4 detailsLabel|detailsBtn */
   #rows tr {
-    display: grid;
+    display:grid;
     grid-template-areas:
       "name   planned"
       "paid   due"
-      "status actions";
+      "status actions"
+      "detailsLabel detailsBtn";
     grid-template-columns: 1fr 1fr;
-    column-gap: 10px;
+    column-gap: 8px;   /* -20% from 10px */
     row-gap: 8px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 10px 12px;
     margin: 10px 0;
-    align-items: start;
-    overflow: hidden;
+    align-items:start;
+    overflow:hidden;
   }
 
-  /* تعيين المناطق حسب ترتيب أعمدتك الحالي: 1 اسم، 2 مخطط، 3 مدفوع، 4 متبقي، 5 حالة، 6 إجراءات */
+  /* Map current columns to areas (1 name, 2 planned, 3 paid, 4 due, 5 status, 6 actions; 7 label, 8 toggle will be injected) */
   #rows td:nth-child(1) { grid-area: name; }
   #rows td:nth-child(2) { grid-area: planned; }
   #rows td:nth-child(3) { grid-area: paid; }
   #rows td:nth-child(4) { grid-area: due; }
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
+  #rows td:nth-child(7) { grid-area: detailsLabel; }
+  #rows td:nth-child(8) { grid-area: detailsBtn; }
 
-  /* عنوان صغير داخل كل خانة — أوضح وأقوى */
-  #rows td { position: relative; padding: 6px 4px; }
+  /* Headings inside cells */
+  #rows td { position:relative; padding: 6px 4px; }
   #rows td::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 0.9rem;
+    display:block;
+    font-size: 0.95rem;
     font-weight: 700;
-    opacity: .9;
+    opacity:.92;
     margin-bottom: 6px;
     line-height: 1.15;
-    letter-spacing: .1px;
   }
-  /* نحقن العناوين بالعربية عبر CSS selectors */
   #rows td:nth-child(1)::before { content: "المصروف"; }
   #rows td:nth-child(2)::before { content: "المخطط"; }
   #rows td:nth-child(3)::before { content: "المدفوع"; }
   #rows td:nth-child(4)::before { content: "المتبقي"; }
   #rows td:nth-child(5)::before { content: "الحالة"; }
   #rows td:nth-child(6)::before { content: "الإجراءات"; }
+  #rows td:nth-child(7)::before { content: "إضافة تفاصيل"; }
+  #rows td:nth-child(8)::before { content: ""; margin:0; }
 
-  /* الحقول */
+  /* Inputs */
   #rows input, #rows select, #rows textarea {
     width: 100%;
     max-width: 100%;
     padding: 8px 10px;
-    box-sizing: border-box;
   }
-
-  /* الأرقام: عرض يكفي ~4 خانات */
-  #rows td:nth-child(2) input,
+  /* Wider fields for name/paid/due (+25%) */
+  #rows td:nth-child(1) input { width: 125%; max-width: 125%; } /* will be capped by cell max-width */
   #rows td:nth-child(3) input,
   #rows td:nth-child(4) input {
-    width: 6.5ch;
-    max-width: 6.5ch;
-    min-width: 0;
-    text-align: end;
+    width: 8ch; max-width: 8ch; min-width: 0; text-align: end;
   }
 
-  /* عمود الإجراءات */
+  /* Actions */
   #rows td:nth-child(6) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
   }
-  #rows td:nth-child(6) button,
-  #rows td:nth-child(6) .btn {
-    padding: 8px 10px;
-    line-height: 1.2;
-    font-size: 0.95rem;
+  #rows td:nth-child(6) button, #rows td:nth-child(6) .btn {
+    padding:8px 10px; line-height:1.2; font-size:0.95rem;
   }
+  /* Details row */
+  #rows td:nth-child(8) { display:flex; justify-content:flex-start; align-items:center; gap:8px; }
+  #rows td:nth-child(8) button, #rows td:nth-child(8) .btn { padding:8px 10px; }
 
-  /* خط أصغر قليلاً لتقليل الازدحام */
-  html { font-size: 15px; }
+  /* Make sure nothing overflows the card */
+  #rows tr * { min-width: 0; }
 }
 </style>
 </head>
@@ -1084,6 +1076,76 @@
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
+<script id="mobile-v17-enhance">
+(function(){
+  function arabic(text){ return (text||'').trim(); }
+  function isDetailsButton(el){
+    if(!el) return false;
+    var t = (el.innerText||el.textContent||'').trim();
+    return /تفصيل|تفاصيل|detail/i.test(t);
+  }
+  function install(){
+    if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
+    var table = document.getElementById('rows');
+    if(!table) return;
+    var rows = table.querySelectorAll('tbody tr');
+    rows.forEach(function(tr){
+      var tds = tr.querySelectorAll('td');
+      if (tds.length < 6) return;
+
+      // Create label cell (right) and button cell (left) for row 4
+      var labelCell = document.createElement('td');
+      labelCell.className = 'mobile-details-label';
+      labelCell.textContent = ''; // label comes from ::before
+      var btnCell = document.createElement('td');
+      btnCell.className = 'mobile-details-btn';
+
+      // Move existing details button (if found) into btnCell; otherwise clone a minimal toggle that clicks any details trigger in row.
+      var actionsCell = tds[5]; // 6th td
+      var found = null;
+      if (actionsCell){
+        var cand = Array.from(actionsCell.querySelectorAll('button, a, .btn'));
+        found = cand.find(isDetailsButton) || null;
+      }
+      if (found){
+        btnCell.appendChild(found);
+      } else {
+        // Create a fallback button that triggers the first button with a plus or details-like action
+        var fake = document.createElement('button');
+        fake.type = 'button';
+        fake.className = 'btn';
+        fake.textContent = 'تفاصيل';
+        fake.addEventListener('click', function(){
+          var target = actionsCell && (actionsCell.querySelector('button, .btn, a'));
+          if (target && target.click) target.click();
+        });
+        btnCell.appendChild(fake);
+      }
+
+      tr.appendChild(labelCell);
+      tr.appendChild(btnCell);
+    });
+
+    // Hide any wide header right above the expenses table if its text contains "المصروف"
+    try{
+      var prev = table.previousElementSibling;
+      if (prev && /المصروف/.test((prev.innerText||prev.textContent||'').trim())) {
+        prev.style.display = 'none';
+      }
+    }catch(e){}
+
+    // No horizontal scroll globally
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', install, {once:true});
+  } else {
+    install();
+  }
+})();
+</script>
 <script id="additem-hardening">
 (function(){
   function install(){
