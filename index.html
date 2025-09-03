@@ -51,14 +51,14 @@
     #delta-chart-wrap{height:240px;position:relative;margin-top:16px}
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
-<style id="mobile-v18">
+
+<style id="mobile-v19">
 @media (max-width: 430px) {
   html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
   #rows { width:100%; table-layout:auto; border-collapse:separate; border-spacing:0; direction: rtl; }
   #rows, #rows * { max-width: 100%; box-sizing: border-box; }
 
-  /* Grid: Row1 name|planned, Row2 paid|due, Row3 status|actions, Row4 detailsInput|detailsToggle */
   #rows tr {
     display:grid;
     grid-template-areas:
@@ -78,7 +78,6 @@
     overflow:hidden;
   }
 
-  /* Map existing 6 tds; extra cells for row 4 are injected by JS */
   #rows td:nth-child(1) { grid-area: name; }
   #rows td:nth-child(2) { grid-area: planned; }
   #rows td:nth-child(3) { grid-area: paid; }
@@ -86,7 +85,6 @@
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
 
-  /* Headings */
   #rows td { position:relative; padding: 6px 4px; }
   #rows td::before {
     display:block;
@@ -103,45 +101,45 @@
   #rows td:nth-child(5)::before { content: "الحالة"; }
   #rows td:nth-child(6)::before { content: "الإجراءات"; }
 
-  /* Inputs */
   #rows input, #rows select, #rows textarea {
     width: 100%;
     max-width: 100%;
     padding: 8px 10px;
   }
-  /* Name narrower (fixed ~16ch) */
-  #rows td:nth-child(1) input {
-    width: 16ch;
-    max-width: 16ch;
-  }
-  /* Planned fits ~5 digits */
+  #rows td:nth-child(1) input { width: 14ch; max-width: 14ch; }
   #rows td:nth-child(2) input { width: 7ch; max-width: 7ch; text-align:end; }
-  /* Paid (keep as before ~8ch) */
-  #rows td:nth-child(3) input { width: 8ch; max-width: 8ch; text-align:end; }
-  /* Due (keep ~8ch) */
-  #rows td:nth-child(4) input { width: 8ch; max-width: 8ch; text-align:end; }
+  #rows td:nth-child(3) input, #rows td:nth-child(4) input { width: 8ch; max-width: 8ch; text-align:end; }
 
-  /* Actions stacked vertically */
   #rows td:nth-child(6) {
-    display:flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    display:flex; flex-direction:column; align-items:flex-start; gap:8px;
   }
   #rows td:nth-child(6) button, #rows td:nth-child(6) .btn {
     padding:8px 10px; line-height:1.2; font-size:0.95rem;
   }
 
-  /* Injected row 4 cells styling */
   #rows td.mobile-details-input::before { content: "إضافة تفاصيل"; }
-  #rows td.mobile-details-toggle::before { content: "إظهار/إخفاء التفاصيل"; }
-  #rows td.mobile-details-toggle { display:flex; align-items:center; gap:8px; }
-  #rows td.mobile-details-toggle button { padding:8px 10px; }
+  #rows td.mobile-details-toggle::before { content: "إظهار/إخفاء"; }
+  #rows td.mobile-details-toggle::after {
+    content: "التفاصيل";
+    display:block;
+    font-size: 0.85rem;
+    opacity: .8;
+    margin-top: 2px;
+  }
+  #rows td.mobile-details-toggle {
+    display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  }
+  #rows td.mobile-details-toggle button {
+    padding:8px 10px; line-height:1.2; font-size:0.95rem;
+    -webkit-appearance: none; appearance: none;
+    background: inherit;
+  }
+  #rows td.mobile-details-input button { background: inherit; }
 
-  /* Prevent overflow */
   #rows tr * { min-width: 0; }
 }
 </style>
+
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
@@ -1083,74 +1081,86 @@
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
-<script id="mobile-v18-enhance">
+
+<script id="mobile-v19-enhance">
 (function(){
   function isDetailsButton(el){
     if(!el) return false;
     var t = (el.innerText||el.textContent||'').trim();
     return /تفصيل|تفاصيل|detail/i.test(t);
   }
-  function install(){
-    if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
+  function enhanceRow(tr){
+    if (!tr || tr.getAttribute('data-mobile-enhanced') === '1') return;
+    var tds = tr.querySelectorAll('td');
+    if (tds.length < 6) return;
+    var actionsCell = tds[5];
+    var detailsBtn = null;
+    if (actionsCell){
+      var cand = Array.from(actionsCell.querySelectorAll('button, a, .btn'));
+      detailsBtn = cand.find(isDetailsButton) || null;
+    }
+    var detailsRight = document.createElement('td');
+    detailsRight.className = 'mobile-details-input';
+    if (detailsBtn) {
+      var clone = detailsBtn.cloneNode(true);
+      detailsRight.appendChild(clone);
+    } else {
+      var fallback = document.createElement('button');
+      fallback.type = 'button';
+      fallback.className = 'btn';
+      fallback.textContent = 'تفاصيل';
+      detailsRight.appendChild(fallback);
+    }
+    var detailsLeft = document.createElement('td');
+    detailsLeft.className = 'mobile-details-toggle';
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'btn';
+    toggle.textContent = 'إظهار/إخفاء';
+    toggle.addEventListener('click', function(){
+      var target = detailsBtn || (actionsCell && (actionsCell.querySelector('button, .btn, a')));
+      if (target && typeof target.click === 'function') {
+        target.click();
+      } else {
+        var panel = tr.querySelector('.details, .detail, .desc, [data-details]');
+        if (panel) {
+          var s = window.getComputedStyle(panel).display;
+          panel.style.display = (s === 'none') ? '' : 'none';
+        }
+      }
+    });
+    detailsLeft.appendChild(toggle);
+    tr.appendChild(detailsRight);
+    tr.appendChild(detailsLeft);
+    tr.setAttribute('data-mobile-enhanced','1');
+  }
+  function enhanceAll(){
     var table = document.getElementById('rows');
     if(!table) return;
     var rows = table.querySelectorAll('tbody tr');
-    rows.forEach(function(tr){
-      var tds = tr.querySelectorAll('td');
-      if (tds.length < 6) return;
-      var actionsCell = tds[5]; // 6th td
-      var detailsBtn = null;
-      if (actionsCell){
-        var cand = Array.from(actionsCell.querySelectorAll('button, a, .btn'));
-        detailsBtn = cand.find(isDetailsButton) || null;
-      }
-      // Create row 4: right = detailsInput (holds details button), left = toggle
-      var detailsRight = document.createElement('td');
-      detailsRight.className = 'mobile-details-input';
-      if (detailsBtn) {
-        detailsRight.appendChild(detailsBtn);
-      } else {
-        var fallback = document.createElement('button');
-        fallback.type = 'button';
-        fallback.className = 'btn';
-        fallback.textContent = 'تفاصيل';
-        detailsRight.appendChild(fallback);
-        detailsBtn = fallback;
-      }
-      var detailsLeft = document.createElement('td');
-      detailsLeft.className = 'mobile-details-toggle';
-      var toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'btn';
-      toggle.textContent = 'إظهار/إخفاء';
-      toggle.addEventListener('click', function(){
-        // Try to trigger the details button or toggle any element with class "details" inside this row
-        if (detailsBtn && typeof detailsBtn.click === 'function') {
-          detailsBtn.click();
-        } else {
-          var panel = tr.querySelector('.details, .detail, .desc, [data-details]');
-          if (panel) {
-            var s = window.getComputedStyle(panel).display;
-            panel.style.display = (s === 'none') ? '' : 'none';
-          }
-        }
-      });
-      detailsLeft.appendChild(toggle);
-
-      tr.appendChild(detailsRight);
-      tr.appendChild(detailsLeft);
-    });
-
-    // Hide any large header above the expenses table
+    rows.forEach(enhanceRow);
+  }
+  function hideHeader(){
     try{
+      var table = document.getElementById('rows');
+      if(!table) return;
       var prev = table.previousElementSibling;
       if (prev) prev.style.display = 'none';
     }catch(e){}
-
+  }
+  function install(){
+    if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
+    enhanceAll();
+    hideHeader();
+    var table = document.getElementById('rows');
+    if (table){
+      var tb = table.querySelector('tbody') || table;
+      var obs = new MutationObserver(function(){ enhanceAll(); });
+      obs.observe(tb, { childList: true, subtree: true });
+    }
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
   }
-
   if (document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', install, {once:true});
   } else {
@@ -1158,6 +1168,8 @@
   }
 })();
 </script>
+
+
 <script id="additem-hardening">
 (function(){
   function install(){
@@ -1193,5 +1205,6 @@
   }
 })();
 </script>
+
 </body>
 </html>
