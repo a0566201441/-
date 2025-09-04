@@ -79,29 +79,30 @@
 
 
 
-<style id="mobile-v35">
+
+
+
+<style id="mobile-v36">
 @media (max-width: 430px) {
-  /* Lock horizontal scroll */
+  /* Lock horizontal scroll globally */
   html, body { margin:0; padding:0; width:100%; max-width:100%; overflow-x:hidden !important; }
   @supports (overflow: clip) { body { overflow-x: clip; } }
   *, *::before, *::after { box-sizing: border-box; }
   img, canvas, svg, video { max-width: 100%; height: auto; }
 
-  /* Full-bleed table so parent width doesn't constrain us */
+  /* Make table follow the page container width (not full-bleed) */
   #rows {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    position: relative;
-    left: 50%; right: 50%;
-    margin-left: -50vw; margin-right: -50vw;
+    width: 100% !important;
+    max-width: 100% !important;
     table-layout: auto; border-collapse: separate; border-spacing: 0; direction: rtl;
+    margin: 0 auto;
   }
 
-  /* Card width: 92vw (was 95vw) */
+  /* Card: 94% of container width (not vw), centered */
   #rows tr {
     display: grid;
-    width: 92vw !important;
-    max-width: 92vw !important;
+    width: 94% !important;
+    max-width: 94% !important;
     margin: 10px auto !important;
     grid-template-areas:
       "name   planned"
