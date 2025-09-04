@@ -73,6 +73,35 @@
 }
 </style>
 
+
+<style id="mobile-v47">
+@media (max-width: 430px){
+  /* رجوع بطاقة البند إلى عمودين (صفحة المصروفات) مع نفس توزيع 5 صفوف */
+  #rows tr {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-areas:
+      "name   planned"
+      "paid   due"
+      "status actions"
+      "detailsInput detailsToggle"
+      "detailsPanel detailsPanel" !important;
+    column-gap: 10px !important;
+    row-gap: 8px !important;
+  }
+  /* تأكيد توزيع كل خلية */
+  #rows td:nth-child(1){ grid-area: name; }
+  #rows td:nth-child(2){ grid-area: planned; }
+  #rows td:nth-child(3){ grid-area: paid; }
+  #rows td:nth-child(4){ grid-area: due; }
+  #rows td:nth-child(5){ grid-area: status; }
+  #rows td:nth-child(6){ grid-area: actions; }
+  #rows td.mobile-details-input{ grid-area: detailsInput; }
+  #rows td.mobile-details-toggle{ grid-area: detailsToggle; }
+  #rows td.mobile-details-panel{ grid-area: detailsPanel; }
+}
+</style>
+
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
