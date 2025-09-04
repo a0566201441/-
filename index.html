@@ -52,7 +52,7 @@
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
 
-<style id="mobile-v22">
+<style id="mobile-v23">
 @media (max-width: 430px) {
   html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
@@ -92,9 +92,10 @@
     display:block;
     font-size: 0.95rem;
     font-weight: 700;
-    opacity:.92;
+    opacity:.95;
     margin-bottom: 6px;
     line-height: 1.15;
+    color: #fff; /* توحيد لون العناوين */
   }
   #rows td:nth-child(1)::before { content: "المصروف"; }
   #rows td:nth-child(2)::before { content: "المخطط"; }
@@ -111,20 +112,22 @@
     min-width: 0;
   }
   #rows td:nth-child(1) input { width: 100%; max-width: 100%; } /* name full */
-  #rows td:nth-child(2) input { width: 7ch; max-width: 7ch; text-align:end; } /* planned 5 digits */
-  #rows td:nth-child(3) input, #rows td:nth-child(4) input { width: 8ch; max-width: 8ch; text-align:end; } /* paid/due 8ch */
+  /* Align numbers to right edge of their cells */
+  #rows td:nth-child(2), #rows td:nth-child(3), #rows td:nth-child(4) { text-align: right; }
+  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
+    width: 8ch; max-width: 8ch; text-align:end; display:inline-block;
+  }
 
   /* Actions stacked */
   #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
   #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
-  /* Hide any legacy details button in actions visually */
-  #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { }
-  #rows td:nth-child(6) .is-details-btn { display:none !important; }
+  #rows td:nth-child(6) .is-details-btn { display:none !important; } /* hide legacy details button */
 
-  /* Row 4 labels */
+  /* Row 4 labels (update title to "التفاصيل" only) */
   #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; }
-  #rows td.mobile-details-toggle::before { content: "إظهار/إخفاء"; }
-  #rows td.mobile-details-toggle::after  { content: "التفاصيل"; display:block; font-size:0.85rem; opacity:.8; margin-top:2px; }
+  #rows td.mobile-details-toggle::before { content: "التفاصيل"; }
+  #rows td.mobile-details-toggle::after  { content: ""; }
+
   #rows td.mobile-details-toggle { display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
   #rows td.mobile-details-toggle button { padding:8px 10px; -webkit-appearance:none; appearance:none; }
 
@@ -142,24 +145,23 @@
     text-align: center;
     padding: 4px 0;
   }
-  #rows td.mobile-details-panel .details-list {
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  /* each detail item = grid: right name | left value */
+  #rows td.mobile-details-panel .details-list { display:flex; flex-direction:column; gap:8px; }
+
+  /* Detail item: name | value | delete(×) */
   #rows td.mobile-details-panel .detail-item {
     display:grid;
-    grid-template-columns: 1fr 9ch; /* name | value */
+    grid-template-columns: 1fr 9ch auto; /* name | value | delete */
     gap:8px;
     align-items:center;
   }
-  #rows td.mobile-details-panel .detail-item input[type="text"] {
-    width:100%;
-  }
+  #rows td.mobile-details-panel .detail-item input[type="text"] { width:100%; }
   #rows td.mobile-details-panel .detail-item input[type="number"],
   #rows td.mobile-details-panel .detail-item input[data-role="value"] {
     width:9ch; max-width:9ch; text-align:end; direction:ltr;
+  }
+  #rows td.mobile-details-panel .detail-item button.del {
+    background:#c0392b; color:#fff; border:none; border-radius:8px;
+    width:34px; height:34px; line-height:34px; text-align:center; font-weight:800; font-size:1rem;
   }
 
   #rows tr * { min-width:0; }
@@ -1108,13 +1110,8 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<script id="mobile-v22-enhance">
+<script id="mobile-v23-enhance">
 (function(){
-  function looksLikeLegacyDetails(el){
-    if(!el) return false;
-    var t = (el.innerText||el.textContent||'').trim();
-    return /تفصيل|تفاصيل|detail|\+/i.test(t);
-  }
   function ensurePanel(tr, openIfEmpty){
     var panel = tr.querySelector('td.mobile-details-panel');
     if (!panel){
@@ -1132,72 +1129,97 @@
     var list = panel.querySelector('.details-list');
     var ph = panel.querySelector('.placeholder');
     if (openIfEmpty === true) panel.style.display = 'block';
-    if (list.children.length > 0) {
-      ph.style.display = 'none';
-    } else {
-      ph.style.display = 'block';
-    }
+    ph.style.display = list.children.length > 0 ? 'none' : 'block';
     return panel;
   }
-  function addDetailItem(panel){
+
+  function updatePaidFromPanel(tr){
+    var panel = tr.querySelector('td.mobile-details-panel');
+    if (!panel) return;
+    var vals = panel.querySelectorAll('.detail-item input[data-role="value"]');
+    var sum = 0;
+    vals.forEach(function(inp){
+      var v = parseFloat((inp.value || '').replace(/,/g,''));
+      if (!isNaN(v)) sum += v;
+    });
+    var paidInput = tr.querySelector('td:nth-child(3) input'); // المدفوع
+    if (paidInput){ paidInput.value = sum || 0; }
+  }
+
+  function addDetailItem(tr){
+    var panel = ensurePanel(tr, true);
     var list = panel.querySelector('.details-list');
     var item = document.createElement('div');
     item.className = 'detail-item';
+
     var name = document.createElement('input');
     name.type = 'text';
     name.placeholder = 'اسم التفصيل';
+
     var value = document.createElement('input');
     value.type = 'number';
     value.setAttribute('data-role','value');
     value.placeholder = 'القيمة';
     value.inputMode = 'numeric';
     value.pattern = '[0-9]*';
-    item.appendChild(name);   // right (name)
-    item.appendChild(value);  // left  (value)
+    value.addEventListener('input', function(){ updatePaidFromPanel(tr); });
+
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'del';
+    del.textContent = '×';
+    del.addEventListener('click', function(){
+      item.remove();
+      var panel = ensurePanel(tr, false);
+      var list = panel.querySelector('.details-list');
+      panel.querySelector('.placeholder').style.display = list.children.length > 0 ? 'none' : 'block';
+      updatePaidFromPanel(tr);
+    });
+
+    item.appendChild(name);  // right
+    item.appendChild(value); // middle
+    item.appendChild(del);   // left
     list.appendChild(item);
-    // hide placeholder if any
-    var ph = panel.querySelector('.placeholder'); if (ph) ph.style.display = 'none';
+
+    // hide placeholder and recalc
+    panel.querySelector('.placeholder').style.display = 'none';
+    updatePaidFromPanel(tr);
   }
+
   function enhanceRow(tr){
     if (!tr || tr.getAttribute('data-mobile-enhanced') === '1') return;
     var tds = tr.querySelectorAll('td'); if (tds.length < 6) return;
+
+    // Hide legacy details button in actions (mobile)
     var actionsCell = tds[5];
-    // Hide legacy details button in actions
     if (actionsCell){
       Array.from(actionsCell.querySelectorAll('button, .btn, a')).forEach(function(b){
-        if (looksLikeLegacyDetails(b)) { b.classList.add('is-details-btn'); b.style.display='none'; }
+        var t = (b.innerText||b.textContent||'').trim();
+        if (/تفصيل|تفاصيل|detail|\+/.test(t)) { b.classList.add('is-details-btn'); b.style.display='none'; }
       });
     }
 
-    // Row 4 right: تفصيل +
+    // Row 4 right: "تفصيل +"
     var addCell = document.createElement('td');
     addCell.className = 'mobile-details-input';
     var addBtn = document.createElement('button');
     addBtn.type = 'button'; addBtn.className = 'btn'; addBtn.textContent = 'تفصيل +';
-    addBtn.addEventListener('click', function(){
-      var panel = ensurePanel(tr, true);
-      addDetailItem(panel);
-    });
+    addBtn.addEventListener('click', function(){ addDetailItem(tr); });
     addCell.appendChild(addBtn);
 
-    // Row 4 left: إظهار/إخفاء التفاصيل
+    // Row 4 left: "التفاصيل" (toggle panel)
     var toggleCell = document.createElement('td');
     toggleCell.className = 'mobile-details-toggle';
     var toggleBtn = document.createElement('button');
     toggleBtn.type = 'button'; toggleBtn.className = 'btn'; toggleBtn.textContent = 'إظهار/إخفاء';
     toggleBtn.addEventListener('click', function(){
       var panel = ensurePanel(tr, false);
-      // if empty, open with placeholder
-      if (panel.querySelector('.details-list').children.length === 0){
-        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
-      } else {
-        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
-      }
+      panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
     });
     toggleCell.appendChild(toggleBtn);
 
-    // Row 5 panel (initial hidden)
-    var panel = ensurePanel(tr, false);
+    // Ensure panel exists (hidden initially)
+    ensurePanel(tr, false);
 
     tr.appendChild(addCell);
     tr.appendChild(toggleCell);
@@ -1230,9 +1252,8 @@
     document.body.style.overflowX = 'hidden';
   }
 
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', install, {once:true});
-  } else { install(); }
+  if (document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', install, {once:true}); }
+  else { install(); }
 })();
 </script>
 
@@ -1265,11 +1286,8 @@
       try{ console && console.error && console.error('additem-hardening failed', err); }catch(_){}
     }
   }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(install, 0); }, {once:true});
-  } else {
-    setTimeout(install, 0);
-  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function(){ setTimeout(install, 0); }, {once:true}); }
+  else { setTimeout(install, 0); }
 })();
 </script>
 </body>
