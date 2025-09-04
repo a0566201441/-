@@ -102,6 +102,20 @@
 }
 </style>
 
+
+<style id="mobile-v49">
+/* desktop/default: hide mobile-only cells */
+td.mobile-details-input,
+td.mobile-details-toggle,
+td.mobile-details-panel { display: none; }
+@media (max-width: 430px){
+  /* show cells on mobile; exact layout handled by mobile-v36/v47 */
+  #rows td.mobile-details-input,
+  #rows td.mobile-details-toggle { display: flex; }
+  #rows td.mobile-details-panel { display: none; } /* toggled via button */
+}
+</style>
+
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
@@ -540,7 +554,102 @@
         });
 
         tb.appendChild(tr);
-
+        // v49: build 5th-row mobile details cells (add/toggle/panel) directly
+        (function(){
+          function ensurePanelCell(){
+            var panel = tr.querySelector('td.mobile-details-panel');
+            if(!panel){
+              panel = document.createElement('td');
+              panel.className = 'mobile-details-panel';
+              var list = document.createElement('div');
+              list.className = 'details-list';
+              var ph = document.createElement('div');
+              ph.className = 'placeholder';
+              ph.textContent = 'لا توجد بنود تفصيلية';
+              panel.appendChild(list);
+              panel.appendChild(ph);
+              tr.appendChild(panel);
+            }
+            return panel;
+          }
+          function updatePaidFromPanel(){
+            var panel = ensurePanelCell();
+            var vals = panel.querySelectorAll('.detail-item input[data-role="value"]');
+            var sum = 0;
+            vals.forEach(function(inp){ var v=parseFloat((inp.value||'').replace(/,/g,'')); if(!isNaN(v)) sum+=v; });
+            paInp.value = sum || 0;
+            it.paid = sum || 0;
+            refreshRow();
+          }
+          function addDetailItem(nameInit, valInit){
+            var panel = ensurePanelCell();
+            panel.style.display = 'block';
+            var list = panel.querySelector('.details-list');
+            var item = document.createElement('div');
+            item.className = 'detail-item';
+            var name = document.createElement('input');
+            name.type = 'text';
+            name.placeholder = 'اسم التفصيل';
+            if (nameInit) name.value = nameInit;
+            var value = document.createElement('input');
+            value.type = 'number';
+            value.setAttribute('data-role','value');
+            value.placeholder = 'القيمة';
+            value.inputMode = 'numeric';
+            value.pattern = '[0-9]*';
+            if (typeof valInit !== 'undefined') value.value = valInit;
+            value.addEventListener('input', updatePaidFromPanel);
+            var delb = document.createElement('button');
+            delb.type = 'button';
+            delb.className = 'del';
+            delb.textContent = '×';
+            delb.addEventListener('click', function(){
+              item.remove();
+              var l = panel.querySelector('.details-list');
+              var ph = panel.querySelector('.placeholder');
+              ph.style.display = l.children.length > 0 ? 'none' : 'block';
+              updatePaidFromPanel();
+            });
+            item.appendChild(name);
+            item.appendChild(value);
+            item.appendChild(delb);
+            list.appendChild(item);
+            var ph = panel.querySelector('.placeholder');
+            ph.style.display = list.children.length > 0 ? 'none' : 'block';
+            updatePaidFromPanel();
+          }
+          // Add row-4 controls
+          var addCell = tr.querySelector('td.mobile-details-input');
+          if(!addCell){
+            addCell = document.createElement('td');
+            addCell.className = 'mobile-details-input';
+            var addBtn = document.createElement('button');
+            addBtn.type='button';
+            addBtn.className='btn';
+            addBtn.textContent='تفصيل +';
+            addBtn.addEventListener('click', function(){ addDetailItem(); });
+            addCell.appendChild(addBtn);
+            tr.appendChild(addCell);
+          }
+          var toggleCell = tr.querySelector('td.mobile-details-toggle');
+          if(!toggleCell){
+            toggleCell = document.createElement('td');
+            toggleCell.className='mobile-details-toggle';
+            var tbtn = document.createElement('button');
+            tbtn.type='button'; tbtn.className='btn'; tbtn.textContent='التفاصيل';
+            tbtn.addEventListener('click', function(){
+              var panel = ensurePanelCell();
+              panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+            });
+            toggleCell.appendChild(tbtn);
+            tr.appendChild(toggleCell);
+          }
+          // If existing subItems, render them into the panel
+          if (Array.isArray(it.subItems) && it.subItems.length){
+            var p = ensurePanelCell();
+            it.subItems.forEach(function(s){ addDetailItem(s.name||'', +s.amount||0); });
+          }
+        })();
         if (it.subItems && it.subItems.length) {
           const row = document.createElement('tr');
           const cell = document.createElement('td');
