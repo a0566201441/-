@@ -1198,5 +1198,29 @@ td.mobile-details-panel { display: none; }
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
+
+<script id="fix-add-delegation-v52">
+// Robust delegation for the "إضافة بند" button to avoid binding issues on some browsers
+(function(){
+  function safeAdd(e){
+    try { if (typeof window.addItem === 'function') return window.addItem(e); }
+    catch(_) {}
+    try { if (typeof window.addItemInline === 'function') return window.addItemInline(e); }
+    catch(_) {}
+    return false;
+  }
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && (ev.target.closest ? ev.target.closest('#add') : null);
+    if (!btn) return;
+    try { ev.preventDefault(); ev.stopPropagation(); } catch(_){}
+    if (btn.dataset && btn.dataset.adding === '1') return;
+    if (btn.dataset) btn.dataset.adding = '1';
+    try { safeAdd(ev); } finally {
+      setTimeout(function(){ if (btn && btn.dataset) btn.dataset.adding = '0'; }, 280);
+    }
+  }, { passive: false });
+})();
+</script>
+
 </body>
 </html>
