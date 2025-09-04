@@ -22,6 +22,7 @@
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .row > div { margin-left: 15px; margin-right: 15px; }
     .muted{color:#9fb1cc;font-size:.9rem}
+
     table.main-table{width:100%;border-collapse:separate;border-spacing:0 10px;margin-top:10px;display:block;overflow-x:auto;white-space:nowrap}
     th,td{text-align:center;padding:12px}
     .main-table th, .main-table td{min-width:120px}
@@ -33,113 +34,50 @@
     .col-due, td.col-due {min-width:140px}
     .main-table td input[type='number']{width:120px}
     .main-table td input[type='text']{width:160px}
+
     .status{font-weight:700}
     .status.مدفوع{color:#22c55e}
     .status.مدفوع-جزئي{color:#facc15}
     .status.غير-مدفوع{color:#1e90ff}
     .status.دخل{color:#60a5fa}
+
     .mark{display:inline-block;margin-inline-start:8px;padding:2px 8px;border-radius:999px;font-size:.8rem;border:1px solid #2a3a52;background:#0f141c;color:#9cc2ff}
+
     .sub-table{margin-top:8px;border:1px solid #2a3a52;border-radius:10px;width:100%}
     .sub-table th{background:#1a2230;color:#9cc2ff}
     .sub-table td{background:#141c26}
+
     #history-chart-wrap{height:260px;position:relative;margin-top:16px}
     #delta-chart-wrap{height:240px;position:relative;margin-top:16px}
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
 
-  <!-- Mobile layout improvements -->
-  <style id="mobile-v36">
-  @media (max-width: 430px) {
-    html, body { margin:0; padding:8px; width:100%; max-width:100%; overflow-x:hidden !important; }
-    @supports (overflow: clip) { body { overflow-x: clip; } }
-    *, *::before, *::after { box-sizing: border-box; }
-    img, canvas, svg, video { max-width: 100%; height: auto; }
+<style id="mobile-v41">
+@media (max-width: 430px){
+  body { padding: 8px 10px !important; }
+}
+</style>
 
-    /* Expenses cards */
-    #rows { width: 100% !important; max-width: 100% !important; direction: rtl; margin: 0 auto; }
-    #rows thead, #rows th { display: none !important; }
 
-    #rows tr {
-      display: grid;
-      width: 94% !important;
-      max-width: 94% !important;
-      margin: 10px auto !important;
-      grid-template-areas:
-        "name   planned"
-        "paid   due"
-        "status actions"
-        "detailsInput detailsToggle"
-        "detailsPanel detailsPanel";
-      grid-template-columns: 1fr 1fr;
-      column-gap: 10px; row-gap: 8px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; padding: 10px 12px;
-      align-items: start; overflow: hidden;
-    }
+<style id="mobile-v43">
+@media (max-width: 430px){
+  .main-table thead, .main-table thead tr, .main-table thead th { display: none !important; }
+}
+</style>
 
-    #rows td:nth-child(1) { grid-area: name; }
-    #rows td:nth-child(2) { grid-area: planned; }
-    #rows td:nth-child(3) { grid-area: paid; }
-    #rows td:nth-child(4) { grid-area: due; }
-    #rows td:nth-child(5) { grid-area: status; }
-    #rows td:nth-child(6) { grid-area: actions; }
 
-    #rows td { position: relative; padding: 6px 4px; }
-    #rows td::before {
-      display:block; font-size:.95rem; font-weight:700; opacity:.95;
-      margin-bottom:6px; line-height:1.15; color:#fff; text-align:center;
-    }
-    #rows td:nth-child(1)::before { content:"المصروف"; }
-    #rows td:nth-child(2)::before { content:"المخطط"; }
-    #rows td:nth-child(3)::before { content:"المدفوع"; }
-    #rows td:nth-child(4)::before { content:"المتبقي"; }
-    #rows td:nth-child(5)::before { content:"الحالة"; }
-    #rows td:nth-child(6)::before { content:"الإجراءات"; }
+<style id="mobile-v44">
+@media (max-width: 430px){
+  #rows { width: 100% !important; max-width: 100% !important; margin: 0 auto; }
+  #rows tr { width: 100% !important; max-width: 100% !important; margin-left:auto !important; margin-right:auto !important; }
+}
+</style>
 
-    #rows input, #rows select, #rows textarea { width:100%; max-width:100%; padding:8px 10px; min-width:0; }
-
-    #rows td:nth-child(1),
-    #rows td:nth-child(2),
-    #rows td:nth-child(3),
-    #rows td:nth-child(4) { display:flex; flex-direction:column; align-items:center; text-align:center; }
-    #rows td:nth-child(1) input { width:16ch; max-width:90%; margin:0 auto; }
-    #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input { width:8ch; max-width:8ch; text-align:end; margin:0 auto; }
-
-    #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
-    #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:.95rem; }
-    #rows td:nth-child(6) .is-details-btn { display:none !important; }
-
-    #rows td.mobile-details-input::before  { content:"إضافة تفاصيل"; text-align:center; width:100%; }
-    #rows td.mobile-details-toggle::before { content:"التفاصيل"; text-align:center; width:100%; }
-    #rows td.mobile-details-input, #rows td.mobile-details-toggle { display:flex; flex-direction:column; align-items:center; gap:6px; }
-    #rows td.mobile-details-input button, #rows td.mobile-details-toggle button { padding:8px 10px; -webkit-appearance:none; appearance:none; }
-
-    #rows td.mobile-details-panel {
-      grid-area: detailsPanel; border:1px dashed rgba(255,255,255,0.15);
-      border-radius:10px; padding:10px; display:none; width:100%; box-sizing:border-box;
-    }
-    #rows td.mobile-details-panel .placeholder { opacity:.8; font-size:.95rem; text-align:center; padding:4px 0; }
-    #rows td.mobile-details-panel .details-list { display:flex; flex-direction:column; gap:8px; }
-    #rows td.mobile-details-panel .detail-item { display:grid; grid-template-columns:1fr 9ch 34px; gap:8px; align-items:center; }
-    #rows td.mobile-details-panel .detail-item input[type="text"] { width:100%; }
-    #rows td.mobile-details-panel .detail-item input[data-role="value"] { width:9ch; max-width:9ch; text-align:end; direction:ltr; }
-    #rows td.mobile-details-panel .detail-item button.del { background:#c0392b; color:#fff; border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; }
-
-    #rows tr * { min-width:0; max-width:100%; }
-
-    /* Hide table heads for extras & investments too */
-    .main-table thead { display:none !important; }
-  }
-  </style>
-
-  <!-- Hide legacy inline sub-detail button label in row 3 -->
-  <style id="hide-row3-subbtn">.sub-btn{ display:none !important; }</style>
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
 
-  <!-- (1) معلومات الفترة والقوالب -->
+  <!-- (1) المرحلة الأولى: السنة والشهر والقوالب -->
   <div class="card">
     <div class="row">
       <div style="flex:1 1 200px">
@@ -148,12 +86,22 @@
       </div>
       <div style="flex:1 1 220px">
         <label>الشهر (ميلادي)</label>
+        
         <select id="month-select">
-          <option value="01">يناير</option><option value="02">فبراير</option><option value="03">مارس</option>
-          <option value="04">أبريل</option><option value="05">مايو</option><option value="06">يونيو</option>
-          <option value="07">يوليو</option><option value="08">أغسطس</option><option value="09">سبتمبر</option>
-          <option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+          <option value="01">يناير</option>
+          <option value="02">فبراير</option>
+          <option value="03">مارس</option>
+          <option value="04">أبريل</option>
+          <option value="05">مايو</option>
+          <option value="06">يونيو</option>
+          <option value="07">يوليو</option>
+          <option value="08">أغسطس</option>
+          <option value="09">سبتمبر</option>
+          <option value="10">أكتوبر</option>
+          <option value="11">نوفمبر</option>
+          <option value="12">ديسمبر</option>
         </select>
+
       </div>
     </div>
 
@@ -172,62 +120,89 @@
       <button id="export-history" class="ghost">تصدير الأرشيف JSON</button>
       <button id="export-csv" class="ghost">تصدير CSV</button>
       <input type="file" id="import-history" accept="application/json" style="display:none" />
-      <button id="import-history-btn" class="ghost">استيراد الأرشيف</button>
+      <button id="import-history-btn" class="ghost">استيراد أرشيف</button>
     </div>
   </div>
 
-  <!-- (2) الراتب -->
+  <!-- (2) المرحلة الثانية: الدخل الشهري -->
   <div class="card">
     <h3>💵 الدخل الشهري (راتب)</h3>
     <div class="row" style="align-items:flex-end">
       <div style="flex:1 1 260px">
         <label>الراتب الشهري</label>
-        <input id="salary2" type="number" />
+        <input id="salary2" type="number" placeholder="" />
       </div>
     </div>
   </div>
 
-  <!-- (3) الدخل الإضافي -->
+  <!-- (3) المرحلة الثالثة: الدخل الإضافي + المصروفات -->
   <div class="card">
     <h3>➕ الدخل الإضافي</h3>
     <label>اسم الدخل</label>
     <input id="extra-name" placeholder="مثال: عمل إضافي" />
     <label>قيمة الدخل</label>
-    <input id="extra-amount" type="number" inputmode="numeric" />
+    <input id="extra-amount" type="number" />
     <button id="add-extra" class="primary" style="margin-top:10px">➕ إضافة دخل</button>
     <table class="main-table">
-      <thead><tr><th>دخل</th><th class="col-paid">المبلغ</th><th>إجراء</th></tr></thead>
+      <thead>
+        <tr>
+          <th>دخل</th>
+          <th class="col-paid">المبلغ</th>
+          <th>إجراء</th>
+        </tr>
+      </thead>
       <tbody id="extras-rows"></tbody>
     </table>
   </div>
 
-  <!-- (4) المصروفات -->
   <div class="card">
     <h3>🧾 المصروفات</h3>
     <label>اسم المصروف</label>
     <div class="row" style="gap:8px">
+      
       <select id="name" style="flex:1 1 220px">
-        <option>سكن</option><option>كهرباء</option><option>ماء</option><option>إنترنت</option><option>غاز</option><option>اتصالات</option>
-        <option>سوبرماركت</option><option>مطاعم</option><option>ترفيه</option><option>وقود</option><option>مواصلات</option><option>تعليم</option>
-        <option>صحة</option><option>ملابس</option><option>هدايا</option><option>جمعية</option><option>أقساط</option><option>صدقات</option><option>أخرى</option>
+        <option>سكن</option>
+        <option>كهرباء</option>
+        <option>ماء</option>
+        <option>إنترنت</option>
+        <option>غاز</option>
+        <option>اتصالات</option>
+        <option>سوبرماركت</option>
+        <option>مطاعم</option>
+        <option>ترفيه</option>
+        <option>وقود</option>
+        <option>مواصلات</option>
+        <option>تعليم</option>
+        <option>صحة</option>
+        <option>ملابس</option>
+        <option>هدايا</option>
+        <option>جمعية</option>
+        <option>أقساط</option>
+        <option>صدقات</option>
+        <option>أخرى</option>
       </select>
+
       <input id="name-custom" placeholder="اكتب هنا لو اخترت (أخرى)" style="flex:1 1 220px" />
       <button id="save-custom-cat" class="ghost">💾 حفظ كخيار دائم</button>
       <button id="delete-cat" class="danger">🗑️ حذف الفئة المختارة</button>
     </div>
-    <label>المبلغ المخطط</label><input id="planned" type="number" inputmode="numeric" />
-    <label>المدفوع حتى الآن</label><input id="paid" type="number" inputmode="numeric" />
+    <label>المبلغ المخطط</label><input id="planned" type="number" />
+    <label>المدفوع حتى الآن</label><input id="paid" type="number" />
     <button id="add" type="button" class="primary" style="margin-top:12px">➕ إضافة بند</button>
 
     <table class="main-table">
       <thead>
         <tr>
-          <th>المصروف</th><th class="col-planned">المخطط</th><th class="col-paid">المدفوع</th><th class="col-due">المتبقي</th><th>الحالة</th><th>إجراءات</th>
+          <th>المصروف</th>
+          <th class="col-planned">المخطط</th>
+          <th class="col-paid">المدفوع</th>
+          <th class="col-due">المتبقي</th>
+          <th>الحالة</th>
+          <th>إجراءات</th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
     </table>
-
     <div class="totals">
       <div><div class="pill">إجمالي المخطط</div><h3 id="t_planned">0</h3></div>
       <div><div class="pill">إجمالي المدفوع</div><h3 id="t_paid">0</h3></div>
@@ -236,7 +211,7 @@
     </div>
   </div>
 
-  <!-- (5) الاستثمارات -->
+  <!-- (4) المرحلة الرابعة: الاستثمارات -->
   <div class="card">
     <h3>📈 الاستثمارات</h3>
     <p class="muted">هذه القائمة مستقلة تمامًا ولا تؤثر على المصروفات أو الأرصدة.</p>
@@ -251,7 +226,7 @@
       </div>
       <div style="flex:1 1 180px">
         <label>المبلغ (هذا الشهر)</label>
-        <input id="inv-amount" type="number" inputmode="numeric" />
+        <input id="inv-amount" type="number" />
       </div>
       <div style="flex:1 1 220px">
         <label>مصدر الأموال</label>
@@ -265,14 +240,20 @@
     <table class="main-table">
       <thead>
         <tr>
-          <th>النوع</th><th>الوجهة</th><th class="col-paid">المبلغ</th><th>المصدر</th><th>الشهر</th><th>تفاصيل</th><th>إجراء</th>
+          <th>النوع</th>
+          <th>الوجهة</th>
+          <th class="col-paid">المبلغ</th>
+          <th>المصدر</th>
+          <th>الشهر</th>
+          <th>تفاصيل</th>
+          <th>إجراء</th>
         </tr>
       </thead>
       <tbody id="inv-rows"></tbody>
     </table>
   </div>
 
-  <!-- (6) الأرشيف -->
+  <!-- (5) المرحلة الخامسة: الأرشيف الشهري -->
   <div class="card">
     <h3>📚 الأرشيف الشهري</h3>
     <div class="row" style="margin-bottom:10px">
@@ -284,8 +265,14 @@
     </div>
     <div id="history-kpis" class="totals"></div>
     <div id="history-table-wrap"></div>
-    <div id="history-chart-wrap"><canvas id="history-chart"></canvas></div>
-    <div id="delta-chart-wrap"><canvas id="delta-chart"></canvas></div>
+
+    <div id="history-chart-wrap">
+      <canvas id="history-chart"></canvas>
+    </div>
+
+    <div id="delta-chart-wrap">
+      <canvas id="delta-chart"></canvas>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -293,18 +280,78 @@
     const $=id=>document.getElementById(id);
     const STORE_KEY='budget-mini-v5';
     const HISTORY_KEY='budget-history-v5';
-    const TEMPLATES_KEY='budget-templates-v4';
+    const TEMPLATES_KEY='budget-templates-v4'; // القوالب كما هي
     const CATS_KEY='budget-custom-cats-v1';
     const DELETED_CATS_KEY='budget-deleted-cats-v1';
 
     let state={salary:0,items:[],extras:[],investments:[]};
+    // جرّب تحميل إصدارات قديمة إن وُجدت
     const legacyStoreV4 = JSON.parse(localStorage.getItem('budget-mini-v4')||'null');
     if(!localStorage.getItem(STORE_KEY) && legacyStoreV4){
       state = { ...legacyStoreV4, investments: legacyStoreV4.investments || [] };
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
     }
 
+    // ضمان ظهور خيارات المصاريف حتى في حالات Safari/iOS
+
+    // ضمان تعبئة كل القوائم المنسدلة المهمة (الشهور، الفئات، القوالب، الأرشيف)
+    function ensureSelectPopulated(id, fillerFn, fallbackBuilder) {
+      const sel = $(id);
+      let tries = 0;
+      const tick = () => {
+        tries++;
+        try {
+          if (sel && sel.options && sel.options.length === 0) {
+            if (typeof fillerFn === 'function') fillerFn();
+          }
+          if (sel && sel.options && sel.options.length === 0 && typeof fallbackBuilder === 'function') {
+            const opts = fallbackBuilder();
+            if (Array.isArray(opts) && opts.length) {
+              opts.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o.value;
+                opt.textContent = o.text;
+                sel.appendChild(opt);
+              });
+            }
+          }
+        } catch(e){}
+        if (sel && sel.options && sel.options.length === 0 && tries < 6) {
+          setTimeout(tick, 200);
+        }
+      };
+      setTimeout(tick, 120);
+    }
+
+    function runEnsures(){
+      ensureSelectPopulated('month-select', fillMonths, () => [
+        {value:'01', text:'يناير'},{value:'02', text:'فبراير'},{value:'03', text:'مارس'},
+        {value:'04', text:'أبريل'},{value:'05', text:'مايو'},{value:'06', text:'يونيو'},
+        {value:'07', text:'يوليو'},{value:'08', text:'أغسطس'},{value:'09', text:'سبتمبر'},
+        {value:'10', text:'أكتوبر'},{value:'11', text:'نوفمبر'},{value:'12', text:'ديسمبر'},
+      ]);
+      ensureSelectPopulated('name', refreshCats, () => (defaultCats||[]).map(c=>({value:c,text:c})) );
+      ensureSelectPopulated('templates-select', refreshTemplates, () => [{value:'', text:'— لا توجد قوالب —'}]);
+      ensureSelectPopulated('history-select', refreshHistorySelect, () => [{value:'', text:'— لا يوجد أرشيف —'}]);
+    }
+
+    function ensureCatsRetries() {
+      const sel = $('name');
+      let attempts = 0;
+      const tick = () => {
+        attempts++;
+        if (sel && sel.options && sel.options.length === 0) {
+          try { refreshCats(); } catch(e){}
+        }
+        if (sel && sel.options && sel.options.length === 0 && attempts < 5) {
+          setTimeout(tick, 200);
+        }
+      };
+      setTimeout(tick, 150);
+    }
+
     let budgetHistory = load(HISTORY_KEY) || {};
+    // ترقية الأرشيف القديم إن وجد (v4)
     const legacyHistoryV4 = JSON.parse(localStorage.getItem('budget-history-v4')||'null');
     if(!Object.keys(budgetHistory).length && legacyHistoryV4){
       budgetHistory = legacyHistoryV4; save(HISTORY_KEY,budgetHistory);
@@ -313,46 +360,33 @@
     let templates = load(TEMPLATES_KEY) || {};
     let customCats = load(CATS_KEY) || [];
     let deletedCats = load(DELETED_CATS_KEY) || [];
+
     let historyChart=null, deltaChart=null;
 
     function load(key){ try{ return JSON.parse(localStorage.getItem(key)||'null') }catch{ return null } }
     function save(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
     function persist(){ save(STORE_KEY,state) }
+
     function normalizeCat(s){ return (s||'').trim().replace(/\s+/g,' '); }
 
-    // --- Arabic/Persian digits -> ASCII ---
-    function normalizeDigits(str){
-      if (typeof str !== 'string') str = (str==null?'':String(str));
-      let out = '';
-      for (let ch of str){
-        const code = ch.codePointAt(0);
-        if (code>=0x0660 && code<=0x0669){ // Arabic-Indic
-          out += String(code-0x0660);
-        } else if (code>=0x06F0 && code<=0x06F9){ // Eastern Arabic (Persian)
-          out += String(code-0x06F0);
-        } else {
-          out += ch;
-        }
-      }
-      return out;
-    }
-    function toNumber(v){
-      const s = normalizeDigits((v||'').toString());
-      const n = parseFloat(s);
-      return isNaN(n) ? 0 : n;
-    }
-
     function monthNow(){ const d=new Date();const m=(d.getMonth()+1).toString().padStart(2,'0');return `${d.getFullYear()}-${m}`; }
-    const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+    // الشهور
+    const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     function fillMonths(){
       const sel=$('month-select'); sel.innerHTML='';
       months.forEach((m,i)=>{ const v=(i+1).toString().padStart(2,'0'); const opt=document.createElement('option'); opt.value=v; opt.textContent=m; sel.appendChild(opt); });
     }
+
+    // دالة لإرجاع اسم الشهر الحالي المختار من أعلى الصفحة
     function currentMonthName(){
-      try { const idx=Math.max(0,(parseInt($('month-select').value || (new Date().getMonth()+1),10)-1)); return months[idx]||''; }
-      catch { return ''; }
+      try {
+        const idx = Math.max(0, (parseInt($('month-select').value || (new Date().getMonth()+1), 10) - 1));
+        return months[idx] || '';
+      } catch { return ''; }
     }
 
+    // الفئات الافتراضية + المخصصة
     const defaultCats=['سكن','كهرباء','ماء','إنترنت','غاز','اتصالات','سوبرماركت','مطاعم','ترفيه','وقود','مواصلات','تعليم','صحة','ملابس','هدايا','جمعية','أقساط','صدقات','أخرى'];
     function visibleCats(){
       const delSet = new Set((deletedCats||[]).map(normalizeCat));
@@ -362,10 +396,10 @@
       const sel=$('name'); sel.innerHTML='';
       let cats = visibleCats();
       if(!Array.isArray(cats) || cats.length === 0){ cats = [...defaultCats]; }
-      cats.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt); });
-      // Default to first non-"أخرى" to avoid confusion
-      const preferred = cats.find(c => c !== 'أخرى') || cats[0] || '';
-      sel.value = preferred;
+      cats.forEach(c=>{
+        const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt);
+      });
+      sel.value = cats.includes('أخرى') ? 'أخرى' : (cats[0]||'');
     }
     function addCustomCatIfNeeded(nameRaw){
       const name = normalizeCat(nameRaw);
@@ -391,6 +425,7 @@
       alert(`تم حذف الفئة "${c}" من القائمة. لا تتأثر البنود المُضافة سابقًا.`);
     }
 
+    // الحالة
     function statusOf(i){
       if((+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0) return {text:'مدفوع', cls:'مدفوع'};
       if((+i.paid||0) > 0 && (+i.paid||0) < (+i.planned||0)) return {text:'مدفوع جزئي', cls:'مدفوع-جزئي'};
@@ -398,6 +433,7 @@
     }
 
     function updateTotals(){
+      // المصروفات
       let tPlanned=0,tPaid=0;
       state.items.forEach(i=>{ tPlanned+=(+i.planned||0); tPaid+=(+i.paid||0); });
       const extrasSum = state.extras.reduce((a,e)=>a+(+e.amount||0),0);
@@ -409,6 +445,7 @@
       const sal2=$('salary2'); if(sal2) sal2.value = state.salary ? state.salary : '';
     }
 
+    // ====== عرض المصروفات ======
     function renderExpenses(){
       const tb=$('rows'); tb.innerHTML='';
       state.items.forEach((it)=>{
@@ -416,8 +453,8 @@
         const tr=document.createElement('tr');
         tr.innerHTML=`
           <td><input type="text" value="${it.name||''}" class="name-input"></td>
-          <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input" inputmode="numeric"></td>
-          <td class="col-paid"><input type="number" value="${it.paid||0}" class="paid-input" inputmode="numeric"></td>
+          <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input"></td>
+          <td class="col-paid"><input type="number" value="${it.paid||0}" class="paid-input"></td>
           <td class="col-due due">${Math.max(0,(+it.planned||0)-(+it.paid||0))}</td>
           <td class="status ${st.cls}">${st.text}</td>
           <td>
@@ -450,8 +487,8 @@
         }
 
         nameInp.addEventListener('input',e=>{ it.name=normalizeCat(e.target.value); persist(); });
-        pInp.addEventListener('input',e=>{ it.planned=toNumber(e.target.value); refreshRow(); });
-        paInp.addEventListener('input',e=>{ it.paid=toNumber(e.target.value); refreshRow(); });
+        pInp.addEventListener('input',e=>{ it.planned=+e.target.value||0; refreshRow(); });
+        paInp.addEventListener('input',e=>{ it.paid=+e.target.value||0; refreshRow(); });
 
         payBtn.addEventListener('click',()=>{
           it.paid=+it.planned||0;
@@ -461,16 +498,16 @@
 
         delBtn.addEventListener('click',()=>{
           state.items = state.items.filter(x=>x!==it);
-          renderExpenses(); updateTotals(); persist();
+          renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
         });
 
         subBtn.addEventListener('click',()=>{
           const subName=normalizeCat(prompt('اسم التفصيل:')||''); if(!subName) return;
-          const subAmount=toNumber(prompt('المبلغ لهذا التفصيل:'));
+          const subAmount=parseFloat(prompt('المبلغ لهذا التفصيل:'))||0;
           it.subItems.push({name:subName, amount:subAmount});
           it.paid=(+it.paid||0)+subAmount;
           paInp.value=it.paid;
-          renderExpenses(); updateTotals(); persist();
+          renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
         });
 
         tb.appendChild(tr);
@@ -497,7 +534,7 @@
             subTr.querySelector('button').addEventListener('click', () => {
               it.subItems.splice(idx, 1);
               it.paid = Math.max(0, (+it.paid||0) - (+s.amount||0));
-              renderExpenses(); updateTotals(); persist();
+              renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
             });
             subBody.appendChild(subTr);
           });
@@ -509,20 +546,21 @@
       });
     }
 
+    // ====== عرض الدخل الإضافي ======
     function renderExtras(){
       const tb=$('extras-rows'); tb.innerHTML='';
       state.extras.forEach((ex, idx)=>{
         const tr=document.createElement('tr');
-        tr.innerHTML = \`
-          <td>\${ex.name}</td>
-          <td class="col-paid"><input type="number" value="\${ex.amount||0}" class="extra-amount-input" inputmode="numeric"></td>
+        tr.innerHTML = `
+          <td>${ex.name}</td>
+          <td class="col-paid"><input type="number" value="${ex.amount||0}" class="extra-amount-input"></td>
           <td><button class="danger del-extra">حذف</button></td>
-        \`;
+        `;
         const amountInp = tr.querySelector('.extra-amount-input');
         const delBtn = tr.querySelector('.del-extra');
 
         amountInp.addEventListener('input', e=>{
-          ex.amount = toNumber(e.target.value);
+          ex.amount = +e.target.value || 0;
           updateTotals(); persist();
         });
         delBtn.addEventListener('click',()=>{
@@ -534,22 +572,23 @@
       });
     }
 
+    // ====== الاستثمارات (قائمة مستقلة) ======
     function renderInvestments(){
       const tb=$('inv-rows'); if(!tb) return; tb.innerHTML='';
       state.investments.forEach((inv, idx)=>{
         const tr=document.createElement('tr');
-        tr.innerHTML = \`
-          <td><input type="text" value="\${inv.type||''}" class="inv-type-input"></td>
-          <td><input type="text" value="\${inv.dest||''}" class="inv-dest-input"></td>
-          <td class="col-paid"><input type="number" value="\${inv.amount||0}" class="inv-amount-input" inputmode="numeric"></td>
-          <td><input type="text" value="\${inv.source||''}" class="inv-source-input"></td>
-          <td><input type="text" value="\${inv.addedMonth||''}" class="inv-month-input" readonly></td>
-          <td><textarea class="inv-notes-input" style="min-height:48px">\${inv.notes||''}</textarea></td>
+        tr.innerHTML = `
+          <td><input type="text" value="${inv.type||''}" class="inv-type-input"></td>
+          <td><input type="text" value="${inv.dest||''}" class="inv-dest-input"></td>
+          <td class="col-paid"><input type="number" value="${inv.amount||0}" class="inv-amount-input"></td>
+          <td><input type="text" value="${inv.source||''}" class="inv-source-input"></td>
+          <td><input type="text" value="${inv.addedMonth||''}" class="inv-month-input" readonly></td>
+          <td><textarea class="inv-notes-input" style="min-height:48px">${inv.notes||''}</textarea></td>
           <td><button class="danger del-inv">حذف</button></td>
-        \`;
+        `;
         tr.querySelector('.inv-type-input').addEventListener('input',e=>{ inv.type=normalizeCat(e.target.value); persist(); });
         tr.querySelector('.inv-dest-input').addEventListener('input',e=>{ inv.dest=normalizeCat(e.target.value); persist(); });
-        tr.querySelector('.inv-amount-input').addEventListener('input',e=>{ inv.amount=toNumber(e.target.value); persist(); });
+        tr.querySelector('.inv-amount-input').addEventListener('input',e=>{ inv.amount=+e.target.value||0; persist(); });
         tr.querySelector('.inv-source-input').addEventListener('input',e=>{ inv.source=normalizeCat(e.target.value); persist(); });
         tr.querySelector('.inv-notes-input').addEventListener('input',e=>{ inv.notes=e.target.value; persist(); });
         tr.querySelector('.del-inv').addEventListener('click',()=>{
@@ -563,34 +602,41 @@
     function addInvestment(){
       const type = normalizeCat($('inv-type').value||'');
       const dest = normalizeCat($('inv-dest').value||'');
-      const amount = toNumber($('inv-amount').value);
+      const amount = +($('inv-amount').value||0);
       const source = normalizeCat($('inv-source').value||'');
       const notes = $('inv-notes').value||'';
       if(!type || !dest || amount<=0){ alert('أدخل نوع الاستثمار والوجهة والمبلغ.'); return; }
-      const addedMonth = currentMonthName();
+      const addedMonth = currentMonthName(); // اسم الشهر المختار من أعلى الصفحة
       state.investments.push({type,dest,amount,source,notes,addedMonth});
       $('inv-type').value=''; $('inv-dest').value=''; $('inv-amount').value=''; $('inv-source').value=''; $('inv-notes').value='';
       renderInvestments(); persist();
       alert('تمت إضافة الاستثمار ✅');
     }
 
+    // ====== إضافة بند مصروف ======
+    // مُعالج احتياطي للأزرار يعمل حتى لو فشل ربط الأحداث
+    function addItemInline(e){
+      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch{}
+      try{ addItem(); }catch(err){ try{ console && console.error && console.error(err); }catch{} }
+      return false;
+    }
     function addItem(){
       try{ if(document.activeElement) document.activeElement.blur(); }catch{}
+
       const selEl = $('name'); const selVal = selEl && selEl.value ? selEl.value : '';
       const customRaw = $('name-custom').value || '';
       const custom = normalizeCat(customRaw);
       const chosen = (selVal === 'أخرى' && custom) ? custom : selVal;
       addCustomCatIfNeeded(chosen);
 
-      const plannedVal = toNumber($('planned').value);
-      const paidVal = toNumber($('paid').value);
+      const plannedVal = +($('planned').value||0); const paidVal = +($('paid').value||0);
       if(!chosen && plannedVal===0 && paidVal===0){ alert('اختر اسم المصروف أو اكتب مبلغًا.'); return; }
       state.items.push({ name: chosen || 'غير مسمى', planned:plannedVal, paid:paidVal, subItems:[] });
       $('name-custom').value=''; $('planned').value=''; $('paid').value='';
-      renderExpenses(); updateTotals(); persist();
-      alert('تمت إضافة البند ✅');
+      renderExpenses(); updateTotals(); persist(); alert('تمت إضافة البند ✅');
     }
 
+    // ====== قوالب (بدون الدخل الإضافي) + يشمل الراتب ======
     function saveCurrentAsTemplate(){
       const tName = prompt('أدخل اسم القالب:'); if(!tName) return;
       const itemsOnly = state.items.map(i => ({
@@ -620,9 +666,10 @@
       if(confirm('حذف القالب؟')){ delete templates[k]; save(TEMPLATES_KEY, templates); refreshTemplates(); }
     }
 
+    // ====== دخل إضافي ======
     function addExtra(){
       const name = normalizeCat($('extra-name').value||'');
-      const amount = toNumber($('extra-amount').value);
+      const amount = +$('extra-amount').value||0;
       if(!name || amount<=0){ alert('أدخل اسم الدخل ومبلغه'); return; }
       state.extras.push({name, amount});
       $('extra-name').value=''; $('extra-amount').value='';
@@ -630,12 +677,13 @@
       alert('تمت إضافة الدخل الإضافي ✅');
     }
 
+    // ====== الأرشيف ======
     function computeTotalsFor(s){
       const planned=s.items.reduce((a,b)=>a+(+b.planned||0),0);
       const paid=s.items.reduce((a,b)=>a+(+b.paid||0),0);
       const due=Math.max(0, planned-paid);
       const extrasSum = (s.extras||[]).reduce((a,e)=>a+(+e.amount||0),0);
-      const balance=(+s.salary||0)+extrasSum - paid;
+      const balance=(+s.salary||0)+extrasSum - paid; // الاستثمارات لا تؤثر
       const completed=s.items.filter(i=>(+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0).length;
       const partial=s.items.filter(i=>(+i.paid||0) > 0 && (+i.paid||0) < (+i.planned||0)).length;
       const zeroPaid=s.items.filter(i=>!(+i.paid||0)).length;
@@ -647,8 +695,8 @@
     function periodFromInputs(){
       const y = ($('year-input').value||'').trim();
       const m = $('month-select').value || '';
-      if(!/^[0-9]{4}$/.test(normalizeDigits(y))){ alert('أدخل السنة بصيغة صحيحة'); return null; }
-      return `${normalizeDigits(y)}-${m}`;
+      if(!/^[0-9]{4}$/.test(y)){ alert('أدخل السنة بصيغة صحيحة'); return null; }
+      return `${y}-${m}`;
     }
 
     function monthIndicator(totals){
@@ -666,8 +714,12 @@
         extras: state.extras||[],
         items: state.items.map(i=>({name:i.name,planned:+i.planned||0,paid:+i.paid||0,subItems:i.subItems||[]})),
         investments: (state.investments||[]).map(x=>({
-          type:x.type, dest:x.dest, amount:+x.amount||0, source:x.source||'',
-          notes:x.notes||'', addedMonth: x.addedMonth || currentMonthName()
+          type:x.type,
+          dest:x.dest,
+          amount:+x.amount||0,
+          source:x.source||'',
+          notes:x.notes||'',
+          addedMonth: x.addedMonth || currentMonthName()
         }))
       };
       snapshot.totals = computeTotalsFor(snapshot);
@@ -693,15 +745,15 @@
       const p=sel.value; if(!p || !budgetHistory[p]){ wrap.innerHTML='<p class="muted">لا يوجد شهر محدد.</p>'; kpis.innerHTML=''; return; }
       const snap=budgetHistory[p]; const t=snap.totals;
       kpis.innerHTML=`
-        <div><div class="pill">إجمالي المخطط</div><h3>${t.planned}</h3></div>
-        <div><div class="pill">إجمالي المدفوع</div><h3>${t.paid}</h3></div>
-        <div><div class="pill">نسبة التنفيذ</div><h3>${t.execRate}%</h3></div>
-        <div><div class="pill">بنود مدفوعة</div><h3>${t.completed}</h3></div>
-        <div><div class="pill">مدفوعة جزئي</div><h3>${t.partial}</h3></div>
-        <div><div class="pill">غير مدفوع</div><h3>${t.zeroPaid}</h3></div>
-        <div><div class="pill">المتبقي</div><h3>${t.due}</h3></div>
-        <div><div class="pill">الرصيد المتوقع</div><h3>${t.balance}</h3></div>
-        <div><div class="pill">إجمالي الاستثمارات</div><h3>${t.invested||0}</h3></div>
+        <div><div class=\"pill\">إجمالي المخطط</div><h3>${t.planned}</h3></div>
+        <div><div class=\"pill\">إجمالي المدفوع</div><h3>${t.paid}</h3></div>
+        <div><div class=\"pill\">نسبة التنفيذ</div><h3>${t.execRate}%</h3></div>
+        <div><div class=\"pill\">بنود مدفوعة</div><h3>${t.completed}</h3></div>
+        <div><div class=\"pill\">مدفوعة جزئي</div><h3>${t.partial}</h3></div>
+        <div><div class=\"pill\">غير مدفوع</div><h3>${t.zeroPaid}</h3></div>
+        <div><div class=\"pill\">المتبقي</div><h3>${t.due}</h3></div>
+        <div><div class=\"pill\">الرصيد المتوقع</div><h3>${t.balance}</h3></div>
+        <div><div class=\"pill\">إجمالي الاستثمارات</div><h3>${t.invested||0}</h3></div>
       `;
 
       let rows='';
@@ -710,7 +762,7 @@
         const st = (+i.paid||0) >= (+i.planned||0) && (+i.planned||0) > 0 ? 'مدفوع' : ((+i.paid||0)>0 ? 'مدفوع جزئي' : 'غير مدفوع');
         rows += `<tr><td>${i.name}</td><td>${i.planned}</td><td>${i.paid}</td><td>${due}</td><td>${st}</td></tr>`;
         if(i.subItems && i.subItems.length){
-          i.subItems.forEach(s=>{ rows+=`<tr><td>↳ ${s.name}</td><td colspan="4">${s.amount}</td></tr>` });
+          i.subItems.forEach(s=>{ rows+=`<tr><td>↳ ${s.name}</td><td colspan=\"4\">${s.amount}</td></tr>` });
         }
       });
 
@@ -719,6 +771,7 @@
         rows += `<tr><td><span class="pill">دخل</span> مجموع الدخل الإضافي</td><td>—</td><td>${exSum}</td><td>—</td><td>دخل</td></tr>`;
       }
 
+      // جدول الاستثمارات للأرشيف
       let invRows='';
       const invs = snap.investments||[];
       const invTotal = invs.reduce((a,x)=>a+(+x.amount||0),0);
@@ -740,12 +793,12 @@
 
       wrap.innerHTML = `
         <h4 style="margin-top:0">تفاصيل المصروفات</h4>
-        <table class="main-table">
+        <table class=\"main-table\">
           <thead><tr><th>المصروف</th><th>المخطط</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
         <h4 style="margin-top:20px">تفاصيل الاستثمارات</h4>
-        <table class="main-table">
+        <table class=\"main-table\">
           <thead><tr><th>النوع</th><th>الوجهة</th><th>المبلغ</th><th>المصدر</th><th>الشهر</th><th>تفاصيل</th></tr></thead>
           <tbody>${invRows}</tbody>
         </table>
@@ -753,6 +806,7 @@
       renderHistoryChart(); renderDeltaChart();
     }
 
+    // ======= الرسوم البيانية =======
     function buildSeries(){
       const hist = budgetHistory || {};
       const periods = Object.keys(hist).sort();
@@ -767,6 +821,7 @@
       return {labels, planned, paid, execRate};
     }
 
+    // المتبقي الحقيقي = الراتب + الدخل الإضافي - المدفوع (بدون تأثير الاستثمارات)
     function buildBalance(){
       const hist = budgetHistory || {};
       const periods = Object.keys(hist).sort();
@@ -810,6 +865,7 @@
       });
     }
 
+    // الرسم السفلي: المتبقي حول خط 0 (أعلى = زيادة، أسفل = نقص)
     function renderDeltaChart(){
       const ctx=$('delta-chart'); if(!ctx) return;
       const {labels, balance, colors} = buildBalance();
@@ -847,6 +903,7 @@
       });
     }
 
+    // تصدير/استيراد
     function exportHistoryJSON(){ const blob=new Blob([JSON.stringify(budgetHistory,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='budget-history.json'; a.click(); URL.revokeObjectURL(url); }
     function exportCSV(){
       const periods=Object.keys(budgetHistory).sort();
@@ -869,10 +926,14 @@
     }
 
     function bind(){
-      // salary sync
-      const sal2=$('salary2'); if(sal2) sal2.addEventListener('input', e=> { state.salary = toNumber(e.target.value); updateTotals(); persist(); });
+      // مزامنة حقل الراتب الوحيد
+      function syncSalary(val){
+        state.salary = +val || 0;
+        updateTotals(); persist();
+      }
+      const sal2=$('salary2'); if(sal2) sal2.addEventListener('input', e=> syncSalary(e.target.value));
 
-      // categories
+      // إدارة الفئات
       $('save-custom-cat').addEventListener('click', ()=>{
         const custom = normalizeCat($('name-custom').value||'');
         if(!custom){ alert('اكتب اسم الفئة أولاً'); return; }
@@ -882,38 +943,32 @@
       });
       $('delete-cat').addEventListener('click', deleteSelectedCat);
 
-      // Add expense (single clean handler)
+      // إضافة بند/دخل إضافي
       (function(){
         const btn=$('add');
         if(btn){
-          const clean = btn.cloneNode(true);
-          clean.removeAttribute('onclick'); clean.removeAttribute('ontouchend');
-          btn.parentNode.replaceChild(clean, btn);
-          clean.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); addItem(); }, {passive:false});
+          const handler=(e)=>{ e.preventDefault(); e.stopPropagation(); addItem(); };
+          btn.addEventListener('click', handler, {passive:false});
+          
         }
       })();
-
-      // other add buttons
       $('add-extra').addEventListener('click', addExtra);
+
+      // الاستثمارات
       $('add-inv').addEventListener('click', addInvestment);
 
-      // templates
+      // قوالب
       $('save-template').addEventListener('click', saveCurrentAsTemplate);
       $('apply-template').addEventListener('click', applyTemplate);
       $('delete-template').addEventListener('click', deleteTemplate);
 
-      // history
+      // الأرشيف
       $('close-month').addEventListener('click', closeMonth);
       $('history-select').addEventListener('change', ()=>{ renderHistory(); });
       $('delete-month').addEventListener('click', deleteSelectedMonth);
 
-      // general
-      $('reset').addEventListener('click', ()=>{
-        if(confirm('تأكيد التفريغ؟')){
-          state={salary:0,items:[],extras:[],investments:[]};
-          renderExpenses(); renderExtras(); renderInvestments(); updateTotals(); persist();
-        }
-      });
+      // عام
+      $('reset').addEventListener('click', ()=>{ if(confirm('تأكيد التفريغ؟')){ state={salary:0,items:[],extras:[],investments:[]}; renderExpenses(); renderExtras(); renderInvestments(); updateTotals(); persist(); } });
       $('export-history').addEventListener('click', exportHistoryJSON);
       $('export-csv').addEventListener('click', exportCSV);
       $('import-history-btn').addEventListener('click', ()=> $('import-history').click());
@@ -931,7 +986,7 @@
       fillMonths();
       const saved = load(STORE_KEY);
       if(saved){ state=saved; }
-      if(!Array.isArray(state.investments)) state.investments=[];
+      if(!Array.isArray(state.investments)) state.investments=[]; // لضمان الحقل
       $('year-input').value = (new Date()).getFullYear();
       $('month-select').value = (new Date().getMonth()+1).toString().padStart(2,'0');
 
@@ -945,7 +1000,17 @@
       renderHistoryChart();
       renderDeltaChart();
       updateTotals();
+      ensureCatsRetries();
+      runEnsures();
       bind();
+      setTimeout(()=>{
+        try{
+          const sel=$('name');
+          if(sel && (!sel.options || sel.options.length===0)){
+            refreshCats();
+          }
+        }catch{}
+      }, 200);
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
