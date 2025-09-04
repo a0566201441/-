@@ -61,135 +61,46 @@
 
 
 
-<style id="mobile-v29">
-@media (max-width: 430px) {
-  /* Page takes full device width, without horizontal scroll */
-  html, body {
-    margin:0; padding:0;
-    width:100%; max-width:100vw;
-    overflow-x:hidden;
-  }
 
-  /* Table spans page width */
+
+
+<style id="mobile-v30">
+@media (max-width: 430px) {
+  /* صفحة بعرض 100% بدون سحب يمين/يسار */
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+  @supports (overflow: clip) {
+    body { overflow-x: clip; } /* قفل أدق للمتصفحات الداعمة */
+  }
+  /* منع أي عنصر من كسر العرض */
+  *, *::before, *::after { box-sizing: border-box; }
+  img, canvas, svg, video { max-width: 100%; height: auto; }
+
+  /* الجدول ياخذ 100% من عرض الصفحة */
   #rows {
-    width:100%; max-width:100vw;
+    width: 100%;
+    max-width: 100%;
     table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
     direction: rtl;
   }
 
-  /* Each card ~90% of page width, centered */
+  /* كل بطاقة ≈ 90% من عرض الصفحة ومتمركزة بالنص */
   #rows tr {
-    display:grid;
-    width:90vw; max-width:90vw;
-    margin: 10px auto; /* center horizontally */
-    box-sizing: border-box;
-    grid-template-areas:
-      "name   planned"
-      "paid   due"
-      "status actions"
-      "detailsInput detailsToggle"
-      "detailsPanel detailsPanel";
-    grid-template-columns: 1fr 1fr; /* equal columns */
-    column-gap: 10px;
-    row-gap: 8px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 10px 12px;
-    align-items:start;
-    overflow:hidden;
+    width: 90%;
+    max-width: 90%;
+    margin: 10px auto;
   }
 
-  #rows thead, #rows th { display: none !important; }
+  /* تأكيد عدم تجاوز أي محتوى لعرض البطاقة */
+  #rows tr, #rows tr * { max-width: 100%; }
 
-  #rows td:nth-child(1) { grid-area: name; }
-  #rows td:nth-child(2) { grid-area: planned; }
-  #rows td:nth-child(3) { grid-area: paid; }
-  #rows td:nth-child(4) { grid-area: due; }
-  #rows td:nth-child(5) { grid-area: status; }
-  #rows td:nth-child(6) { grid-area: actions; }
-
-  #rows td { position:relative; padding: 6px 4px; box-sizing: border-box; }
-  #rows td::before {
-    display:block; font-size: 0.95rem; font-weight: 700; opacity:.95;
-    margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
-  }
-  #rows td:nth-child(1)::before { content: "المصروف"; }
-  #rows td:nth-child(2)::before { content: "المخطط"; }
-  #rows td:nth-child(3)::before { content: "المدفوع"; }
-  #rows td:nth-child(4)::before { content: "المتبقي"; }
-  #rows td:nth-child(5)::before { content: "الحالة"; }
-  #rows td:nth-child(6)::before { content: "الإجراءات"; }
-
-  /* Inputs */
-  #rows input, #rows select, #rows textarea {
-    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0; box-sizing: border-box;
-  }
-
-  /* Center labels/fields rows 1-4 */
-  #rows td:nth-child(1),
-  #rows td:nth-child(2),
-  #rows td:nth-child(3),
-  #rows td:nth-child(4) {
-    display:flex; flex-direction: column; align-items: center; text-align:center;
-  }
-  #rows td:nth-child(1) input { width: 16ch; max-width: 90%; margin: 0 auto; }
-  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
-    width: 8ch; max-width: 8ch; text-align:end; margin: 0 auto;
-  }
-
-  /* Actions (row3 left) centered */
-  #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
-  #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
-  #rows td:nth-child(6) .is-details-btn { display:none !important; } /* hide legacy details only */
-
-  /* Row4 labels/buttons centered */
-  #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align:center; width:100%; }
-  #rows td.mobile-details-toggle::before { content: "التفاصيل"; text-align:center; width:100%; }
-  #rows td.mobile-details-toggle::after  { content: ""; }
-  #rows td.mobile-details-input, #rows td.mobile-details-toggle {
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-  }
-  #rows td.mobile-details-input button, #rows td.mobile-details-toggle button {
-    padding:8px 10px; -webkit-appearance:none; appearance:none;
-  }
-
-  /* Row5 panel */
-  #rows td.mobile-details-panel {
-    grid-area: detailsPanel;
-    border: 1px dashed rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 10px;
-    display: none;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  #rows td.mobile-details-panel .placeholder {
-    opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
-  }
-  #rows td.mobile-details-panel .details-list { display:flex; flex-direction:column; gap:8px; }
-  #rows td.mobile-details-panel .detail-item {
-    display:grid; grid-template-columns: 1fr 9ch 34px; gap:8px; align-items:center;
-  }
-  #rows td.mobile-details-panel .detail-item input[type="text"] { width:100%; }
-  #rows td.mobile-details-panel .detail-item input[data-role="value"] {
-    width:9ch; max-width:9ch; text-align:end; direction:ltr;
-  }
-  #rows td.mobile-details-panel .detail-item button.del {
-    background:#c0392b; color:#fff; border:none; border-radius:8px;
-    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
-    font-weight:800; font-size:1rem;
-  }
-
-  /* Status text */
-  #rows td .mobile-status-text { margin-top: 2px; font-size: .9rem; text-align:center; }
-  #rows td .mobile-status-text.ok { color: #2ecc71; }
-  #rows td .mobile-status-text.over { color: #e74c3c; }
-  #rows td .mobile-status-text.neutral { color: #ddd; }
-
-  #rows tr * { min-width:0; max-width:100%; }
+  /* لا تغيير على التخطيط السابق للحقول/العناوين — فقط ضبط العرض والأوفر فلو */
 }
 </style>
 
