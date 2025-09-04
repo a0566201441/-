@@ -52,7 +52,10 @@
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
 
-<style id="mobile-v26">
+
+
+
+<style id="mobile-v27">
 @media (max-width: 430px) {
   html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
@@ -67,7 +70,7 @@
       "status actions"
       "detailsInput detailsToggle"
       "detailsPanel detailsPanel";
-    grid-template-columns: 1fr 1fr; /* أعمدة متساوية */
+    grid-template-columns: 1fr 1fr; /* equal columns */
     column-gap: 10px;
     row-gap: 8px;
     background: rgba(255,255,255,0.03);
@@ -88,7 +91,7 @@
   #rows td { position:relative; padding: 6px 4px; }
   #rows td::before {
     display:block; font-size: 0.95rem; font-weight: 700; opacity:.95;
-    margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center; /* العناوين بالنصف */
+    margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
   }
   #rows td:nth-child(1)::before { content: "المصروف"; }
   #rows td:nth-child(2)::before { content: "المخطط"; }
@@ -97,33 +100,34 @@
   #rows td:nth-child(5)::before { content: "الحالة"; }
   #rows td:nth-child(6)::before { content: "الإجراءات"; }
 
-  /* مدخلات الحقول */
+  /* Inputs */
   #rows input, #rows select, #rows textarea {
     width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0;
   }
-
-  /* الصفوف 1-4: الحقول والعناوين في منتصف كل عمود */
-  /* الصف 1 (المصروف) */
+  /* Row1: name centered */
   #rows td:nth-child(1) { display:flex; flex-direction: column; align-items: center; }
   #rows td:nth-child(1) input { width: 16ch; max-width: 100%; margin: 0 auto; }
 
-  /* الصف 2-4 (المخطط/المدفوع/المتبقي) */
+  /* Rows2-4: labels above, inputs centered */
   #rows td:nth-child(2), #rows td:nth-child(3), #rows td:nth-child(4) {
-    display:flex; flex-direction: column; align-items: center; /* وسط العمود */
+    display:flex; flex-direction: column; align-items: center;
   }
   #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
     width: 8ch; max-width: 8ch; text-align:end; margin: 0 auto; display:block;
   }
 
-  /* الصف 3 (الحالة) يظل بنمطه مع النص أسفل العنوان */
-  #rows td .mobile-status-text { margin-top: 2px; font-size: .9rem; text-align:center; }
-  #rows td .mobile-status-text.ok { color: #2ecc71; }
-  #rows td .mobile-status-text.over { color: #e74c3c; }
-  #rows td .mobile-status-text.neutral { color: #ddd; }
+  /* Row3 left (actions): center its content */
+  #rows td:nth-child(6) {
+    display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+  }
+  #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
 
-  /* الصف 4: محاذاة الأزرار والعناوين في الوسط */
-  #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; }
-  #rows td.mobile-details-toggle::before { content: "التفاصيل"; }
+  /* Keep legacy "تفصيل" hidden on mobile, but allow "تم الدفع" to show */
+  #rows td:nth-child(6) .is-details-btn { display:none !important; }
+
+  /* Row4 labels/buttons centered */
+  #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align:center; width:100%; }
+  #rows td.mobile-details-toggle::before { content: "التفاصيل"; text-align:center; width:100%; }
   #rows td.mobile-details-toggle::after  { content: ""; }
   #rows td.mobile-details-input, #rows td.mobile-details-toggle {
     display:flex; flex-direction:column; align-items:center; gap:6px;
@@ -132,7 +136,7 @@
     padding:8px 10px; -webkit-appearance:none; appearance:none;
   }
 
-  /* الصف 5: لوحة التفاصيل */
+  /* Row5 panel */
   #rows td.mobile-details-panel {
     grid-area: detailsPanel; border: 1px dashed rgba(255,255,255,0.15);
     border-radius: 10px; padding: 10px; display: none;
@@ -154,10 +158,11 @@
     font-weight:800; font-size:1rem;
   }
 
-  /* الإجراءات: إخفاء الأزرار القديمة على الجوال */
-  #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
-  #rows td:nth-child(6) .is-details-btn { display:none !important; }
-  #rows td:nth-child(6) .is-paid-btn { display:none !important; }
+  /* Status text */
+  #rows td .mobile-status-text { margin-top: 2px; font-size: .9rem; text-align:center; }
+  #rows td .mobile-status-text.ok { color: #2ecc71; }
+  #rows td .mobile-status-text.over { color: #e74c3c; }
+  #rows td .mobile-status-text.neutral { color: #ddd; }
 
   #rows tr * { min-width:0; }
 }
@@ -1104,7 +1109,8 @@
     }
     document.addEventListener('DOMContentLoaded', init);
   </script>
-<script id="mobile-v26-enhance">
+
+<script id="mobile-v27-enhance">
 (function(){
   function ensurePanel(tr, openIfEmpty){
     var panel = tr.querySelector('td.mobile-details-panel');
@@ -1142,6 +1148,10 @@
   }
 
   function addDetailItem(tr){
+    if (tr.dataset.detailLock === '1') return; // prevent double add
+    tr.dataset.detailLock = '1';
+    setTimeout(function(){ tr.dataset.detailLock = '0'; }, 300);
+
     var panel = ensurePanel(tr, true);
     var list = panel.querySelector('.details-list');
     var item = document.createElement('div');
@@ -1186,7 +1196,7 @@
     Array.from(actionsCell.querySelectorAll('button, .btn, a')).forEach(function(b){
       var t = (b.innerText||b.textContent||'').trim();
       if (/تفصيل|تفاصيل|detail|\+/.test(t)) { b.classList.add('is-details-btn'); b.style.display='none'; }
-      if (/تم\s*الدفع/.test(t))           { b.classList.add('is-paid-btn');    b.style.display='none'; }
+      // DO NOT hide "تم الدفع" anymore
     });
   }
 
@@ -1281,6 +1291,32 @@
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
     enhanceAll(); hideHeader();
+
+    // Global single-flight guard for #add to prevent double main-row add
+    var guard = false;
+    function wrap(fnName){
+      var orig = window[fnName];
+      if (typeof orig !== 'function' || orig.__wrapped) return;
+      function wrapped(){
+        if (guard) return false;
+        guard = true;
+        try { return orig.apply(this, arguments); }
+        finally { setTimeout(function(){ guard=false; }, 300); }
+      }
+      wrapped.__wrapped = true;
+      window[fnName] = wrapped;
+    }
+    wrap('addItem'); wrap('addItemInline');
+
+    var addBtn = document.getElementById('add');
+    if (addBtn){
+      ['click','touchend'].forEach(function(ev){
+        addBtn.addEventListener(ev, function(e){
+          if (guard){ e.preventDefault(); e.stopPropagation(); return false; }
+        }, true);
+      });
+    }
+
     var table = document.getElementById('rows');
     if (table){
       var tb = table.querySelector('tbody') || table;
@@ -1294,5 +1330,6 @@
   if (document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', install, {once:true}); }
   else { install(); }
 })();
-</script></body>
+</script>
+</body>
 </html>
