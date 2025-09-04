@@ -1199,26 +1199,50 @@ td.mobile-details-panel { display: none; }
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<script id="fix-add-delegation-v52">
-// Robust delegation for the "إضافة بند" button to avoid binding issues on some browsers
+<script id="wire-adds-v53">
 (function(){
-  function safeAdd(e){
-    try { if (typeof window.addItem === 'function') return window.addItem(e); }
-    catch(_) {}
-    try { if (typeof window.addItemInline === 'function') return window.addItemInline(e); }
-    catch(_) {}
-    return false;
+  function byId(id){ return document.getElementById(id); }
+  function safe(fn){ try{ return typeof fn === 'function' ? fn : null; }catch(_){ return null; } }
+
+  function wireOne(id, handler){
+    var el = byId(id);
+    if (!el) return;
+    // Ensure type=button to avoid form submit in odd cases
+    if (!el.getAttribute('type')) el.setAttribute('type','button');
+    // Replace node to drop any old listeners
+    var clone = el.cloneNode(true);
+    if (el.parentNode) el.parentNode.replaceChild(clone, el);
+    // Single click handler with dedupe guard
+    clone.addEventListener('click', function(ev){
+      try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+      if (clone.dataset && clone.dataset.busy === '1') return;
+      if (clone.dataset) clone.dataset.busy = '1';
+      try { handler(ev); } finally {
+        setTimeout(function(){ if (clone && clone.dataset) clone.dataset.busy = '0'; }, 250);
+      }
+    }, { passive:false });
   }
-  document.addEventListener('click', function(ev){
-    var btn = ev.target && (ev.target.closest ? ev.target.closest('#add') : null);
-    if (!btn) return;
-    try { ev.preventDefault(); ev.stopPropagation(); } catch(_){}
-    if (btn.dataset && btn.dataset.adding === '1') return;
-    if (btn.dataset) btn.dataset.adding = '1';
-    try { safeAdd(ev); } finally {
-      setTimeout(function(){ if (btn && btn.dataset) btn.dataset.adding = '0'; }, 280);
+
+  function wireAll(){
+    var addItem      = safe(window.addItem)       || safe(window.addItemInline);
+    var addExtra     = safe(window.addExtra);
+    var addInvestment= safe(window.addInvestment);
+
+    // If core functions aren't ready yet, retry shortly
+    if (!addItem || !addExtra || !addInvestment){
+      return setTimeout(wireAll, 120);
     }
-  }, { passive: false });
+
+    wireOne('add',        addItem);
+    wireOne('add-extra',  addExtra);
+    wireOne('add-inv',    addInvestment);
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(wireAll, 80); }, { once:true });
+  } else {
+    setTimeout(wireAll, 80);
+  }
 })();
 </script>
 
