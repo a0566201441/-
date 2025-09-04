@@ -52,20 +52,22 @@
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
 
-<style id="mobile-v20">
+<style id="mobile-v21">
 @media (max-width: 430px) {
   html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
   #rows { width:100%; table-layout:auto; border-collapse:separate; border-spacing:0; direction: rtl; }
   #rows, #rows * { max-width: 100%; box-sizing: border-box; }
 
+  /* Grid rows + a 5th row for the details panel */
   #rows tr {
     display:grid;
     grid-template-areas:
       "name   planned"
       "paid   due"
       "status actions"
-      "detailsInput detailsToggle";
+      "detailsInput detailsToggle"
+      "detailsPanel detailsPanel";
     grid-template-columns: 1fr 1fr;
     column-gap: 10px;
     row-gap: 8px;
@@ -114,17 +116,29 @@
   #rows td:nth-child(6) {
     display:flex; flex-direction:column; align-items:flex-start; gap:8px;
   }
-  #rows td:nth-child(6) button, #rows td:nth-child(6) .btn {
-    padding:8px 10px; line-height:1.2; font-size:0.95rem;
-  }
+  #rows td:nth-child(6) .is-details-btn { display:none !important; }
 
-  #rows td.mobile-details-input::before { content: "إضافة تفاصيل"; }
+  /* Row 4 injected cells */
+  #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; }
   #rows td.mobile-details-toggle::before { content: "إظهار/إخفاء"; }
-  #rows td.mobile-details-toggle::after { content: "التفاصيل"; display:block; font-size:0.85rem; opacity:.8; margin-top:2px; }
-  #rows td.mobile-details-toggle { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+  #rows td.mobile-details-toggle::after  { content: "التفاصيل"; display:block; font-size:0.85rem; opacity:.8; margin-top:2px; }
+  #rows td.mobile-details-toggle { display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
   #rows td.mobile-details-toggle button { padding:8px 10px; -webkit-appearance:none; appearance:none; }
 
-  #rows td:nth-child(6) .is-details-btn { display:none !important; }
+  /* Row 5: details panel spanning two columns */
+  #rows td.mobile-details-panel {
+    grid-area: detailsPanel;
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px;
+    display: none; /* hidden by default until toggled */
+  }
+  #rows td.mobile-details-panel .placeholder {
+    opacity: .8;
+    font-size: .95rem;
+    text-align: center;
+    padding: 6px 0;
+  }
 
   #rows tr * { min-width: 0; }
 }
@@ -1072,8 +1086,9 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<script id="mobile-v20-enhance">
+<script id="mobile-v21-enhance">
 (function(){
+  var rowCounter = 1;
   function isDetailsButton(el){
     if(!el) return false;
     var t = (el.innerText||el.textContent||'').trim();
@@ -1083,16 +1098,21 @@
     if (!tr || tr.getAttribute('data-mobile-enhanced') === '1') return;
     var tds = tr.querySelectorAll('td');
     if (tds.length < 6) return;
+    // Assign an id to relate future detail rows
+    if (!tr.dataset.rowId) tr.dataset.rowId = 'row-' + (rowCounter++);
+
     var actionsCell = tds[5];
     var detailsBtn = null;
     if (actionsCell){
       var cand = Array.from(actionsCell.querySelectorAll('button, a, .btn'));
       detailsBtn = cand.find(isDetailsButton) || null;
       if (detailsBtn){
-        detailsBtn.classList.add('is-details-btn');
+        detailsBtn.classList.add('is-details-btn'); // keep for programmatic add, hide visually by CSS
         detailsBtn.style.display = 'none';
       }
     }
+
+    // Row 4 right: "تفصيل +" to add a new detail (triggers original details button)
     var addCell = document.createElement('td');
     addCell.className = 'mobile-details-input';
     var addBtn = document.createElement('button');
@@ -1100,15 +1120,20 @@
     addBtn.className = 'btn';
     addBtn.textContent = 'تفصيل +';
     addBtn.addEventListener('click', function(){
+      // Mark pending parent id so observer can tag the new detail row
+      window.__pendingDetailParentId = tr.dataset.rowId;
       if (detailsBtn && typeof detailsBtn.click === 'function') {
         detailsBtn.click();
       } else {
         var target = actionsCell && (actionsCell.querySelector('button, .btn, a'));
         if (target && target.click) target.click();
       }
+      // Ensure panel visible after adding
+      ensurePanel(tr, /*open*/ true);
     });
     addCell.appendChild(addBtn);
 
+    // Row 4 left: toggle visibility of associated detail rows
     var toggleCell = document.createElement('td');
     toggleCell.className = 'mobile-details-toggle';
     var toggleBtn = document.createElement('button');
@@ -1116,28 +1141,71 @@
     toggleBtn.className = 'btn';
     toggleBtn.textContent = 'إظهار/إخفاء';
     toggleBtn.addEventListener('click', function(){
-      if (detailsBtn && typeof detailsBtn.click === 'function') {
-        detailsBtn.click();
-        return;
-      }
-      var panel = tr.querySelector('.details, .detail, .desc, [data-details]');
-      if (panel) {
-        var s = getComputedStyle(panel).display;
-        panel.style.display = (s === 'none') ? '' : 'none';
+      var panel = ensurePanel(tr, /*open*/ null); // just ensure exists
+      var related = findRelatedDetailRows(tr);
+      if (related.length === 0) {
+        // Show placeholder if no details exist
+        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        panel.innerHTML = '<div class="placeholder">لا توجد بنود تفصيلية</div>';
+      } else {
+        // Toggle visibility of the real detail rows
+        var anyVisible = related.some(function(r){ return r.style.display !== 'none'; });
+        var show = !anyVisible;
+        related.forEach(function(r){ r.style.display = show ? '' : 'none'; });
+        // Keep panel open if we are hiding all? Hide panel if rows exist and are shown inside table
+        panel.style.display = 'none';
       }
     });
     toggleCell.appendChild(toggleBtn);
 
+    // Row 5: panel td holder (initially hidden)
+    var panelCell = document.createElement('td');
+    panelCell.className = 'mobile-details-panel';
+
     tr.appendChild(addCell);
     tr.appendChild(toggleCell);
+    tr.appendChild(panelCell);
     tr.setAttribute('data-mobile-enhanced','1');
   }
+
+  function ensurePanel(tr, open){
+    var panel = tr.querySelector('td.mobile-details-panel');
+    if (!panel){
+      panel = document.createElement('td');
+      panel.className = 'mobile-details-panel';
+      tr.appendChild(panel);
+    }
+    if (open === true) panel.style.display = 'block';
+    return panel;
+  }
+
+  function findRelatedDetailRows(tr){
+    var id = tr && tr.dataset && tr.dataset.rowId;
+    if (!id) return [];
+    var tb = tr.closest('tbody') || tr.parentNode;
+    // detail rows are those immediately after the main tr with data-parent-row-id = id
+    var out = [];
+    var n = tr.nextElementSibling;
+    while (n && n.tagName && n.tagName.toLowerCase() === 'tr') {
+      if (n.getAttribute('data-parent-row-id') === id) {
+        out.push(n);
+        n = n.nextElementSibling;
+      } else {
+        // stop when hitting another main row
+        if (n.getAttribute('data-mobile-enhanced') === '1' || n.querySelector('td:nth-child(1) input, td:nth-child(2) input, td:nth-child(3) input')) break;
+        n = n.nextElementSibling;
+      }
+    }
+    return out;
+  }
+
   function enhanceAll(){
     var table = document.getElementById('rows');
     if(!table) return;
     var rows = table.querySelectorAll('tbody tr');
     rows.forEach(enhanceRow);
   }
+
   function hideHeader(){
     try{
       var table = document.getElementById('rows');
@@ -1146,19 +1214,40 @@
       if (prev) prev.style.display = 'none';
     }catch(e){}
   }
+
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
     enhanceAll();
     hideHeader();
+
+    // Observer: tag newly inserted detail rows with parent id (set when right button clicked)
     var table = document.getElementById('rows');
     if (table){
       var tb = table.querySelector('tbody') || table;
-      var obs = new MutationObserver(function(){ enhanceAll(); });
+      var obs = new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          m.addedNodes && m.addedNodes.forEach(function(node){
+            if (!node || node.nodeType !== 1) return;
+            if (node.tagName && node.tagName.toLowerCase() === 'tr'){
+              // Heuristic: a detail row usually has <= 3 inputs and doesn't have headings
+              var inputs = node.querySelectorAll('input, select, textarea');
+              if (inputs.length <= 3 && !node.querySelector('th')){
+                if (window.__pendingDetailParentId){
+                  node.setAttribute('data-parent-row-id', window.__pendingDetailParentId);
+                }
+              }
+            }
+          });
+        });
+        enhanceAll();
+      });
       obs.observe(tb, { childList: true, subtree: true });
     }
+
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
   }
+
   if (document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', install, {once:true});
   } else {
