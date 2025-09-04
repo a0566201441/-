@@ -52,14 +52,12 @@
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
 
-<style id="mobile-v23">
+<style id="mobile-v24">
 @media (max-width: 430px) {
   html, body { overflow-x: hidden; }
   #rows thead, #rows th { display: none !important; }
   #rows { width:100%; table-layout:auto; border-collapse:separate; border-spacing:0; direction: rtl; }
   #rows, #rows * { max-width: 100%; box-sizing: border-box; }
-
-  /* Grid + row 5 panel */
   #rows tr {
     display:grid;
     grid-template-areas:
@@ -79,23 +77,16 @@
     align-items:start;
     overflow:hidden;
   }
-
   #rows td:nth-child(1) { grid-area: name; }
   #rows td:nth-child(2) { grid-area: planned; }
   #rows td:nth-child(3) { grid-area: paid; }
   #rows td:nth-child(4) { grid-area: due; }
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
-
   #rows td { position:relative; padding: 6px 4px; }
   #rows td::before {
-    display:block;
-    font-size: 0.95rem;
-    font-weight: 700;
-    opacity:.95;
-    margin-bottom: 6px;
-    line-height: 1.15;
-    color: #fff; /* توحيد لون العناوين */
+    display:block; font-size: 0.95rem; font-weight: 700; opacity:.95;
+    margin-bottom: 6px; line-height: 1.15; color: #fff;
   }
   #rows td:nth-child(1)::before { content: "المصروف"; }
   #rows td:nth-child(2)::before { content: "المخطط"; }
@@ -103,67 +94,53 @@
   #rows td:nth-child(4)::before { content: "المتبقي"; }
   #rows td:nth-child(5)::before { content: "الحالة"; }
   #rows td:nth-child(6)::before { content: "الإجراءات"; }
-
-  /* Inputs */
   #rows input, #rows select, #rows textarea {
-    width: 100%;
-    max-width: 100%;
-    padding: 8px 10px;
-    min-width: 0;
+    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0;
   }
-  #rows td:nth-child(1) input { width: 100%; max-width: 100%; } /* name full */
-  /* Align numbers to right edge of their cells */
-  #rows td:nth-child(2), #rows td:nth-child(3), #rows td:nth-child(4) { text-align: right; }
+  #rows td:nth-child(1) input { width: 100%; max-width: 100%; }
+  #rows td:nth-child(2), #rows td:nth-child(3), #rows td:nth-child(4) {
+    display:flex; justify-content:flex-end; align-items:flex-end;
+  }
   #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
-    width: 8ch; max-width: 8ch; text-align:end; display:inline-block;
+    width: 8ch; max-width: 8ch; text-align:end; display:block;
   }
-
-  /* Actions stacked */
   #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
   #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
-  #rows td:nth-child(6) .is-details-btn { display:none !important; } /* hide legacy details button */
-
-  /* Row 4 labels (update title to "التفاصيل" only) */
+  #rows td:nth-child(6) .is-details-btn { display:none !important; }
+  #rows td:nth-child(6) .is-paid-btn { display:none !important; }
   #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; }
   #rows td.mobile-details-toggle::before { content: "التفاصيل"; }
   #rows td.mobile-details-toggle::after  { content: ""; }
-
-  #rows td.mobile-details-toggle { display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
-  #rows td.mobile-details-toggle button { padding:8px 10px; -webkit-appearance:none; appearance:none; }
-
-  /* Row 5 panel that holds detail items */
+  #rows td.mobile-details-input, #rows td.mobile-details-toggle {
+    display:flex; flex-direction:column; gap:6px; align-items:flex-start;
+  }
+  #rows td.mobile-details-input button, #rows td.mobile-details-toggle button {
+    padding:8px 10px; -webkit-appearance:none; appearance:none;
+  }
   #rows td.mobile-details-panel {
-    grid-area: detailsPanel;
-    border: 1px dashed rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 10px;
-    display: none;
+    grid-area: detailsPanel; border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 10px; display: none;
   }
   #rows td.mobile-details-panel .placeholder {
-    opacity: .8;
-    font-size: .95rem;
-    text-align: center;
-    padding: 4px 0;
+    opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
   }
   #rows td.mobile-details-panel .details-list { display:flex; flex-direction:column; gap:8px; }
-
-  /* Detail item: name | value | delete(×) */
   #rows td.mobile-details-panel .detail-item {
-    display:grid;
-    grid-template-columns: 1fr 9ch auto; /* name | value | delete */
-    gap:8px;
-    align-items:center;
+    display:grid; grid-template-columns: 1fr 9ch 34px; gap:8px; align-items:center;
   }
   #rows td.mobile-details-panel .detail-item input[type="text"] { width:100%; }
-  #rows td.mobile-details-panel .detail-item input[type="number"],
   #rows td.mobile-details-panel .detail-item input[data-role="value"] {
     width:9ch; max-width:9ch; text-align:end; direction:ltr;
   }
   #rows td.mobile-details-panel .detail-item button.del {
     background:#c0392b; color:#fff; border:none; border-radius:8px;
-    width:34px; height:34px; line-height:34px; text-align:center; font-weight:800; font-size:1rem;
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1rem;
   }
-
+  #rows td .mobile-status-text { margin-top: 2px; font-size: .9rem; }
+  #rows td .mobile-status-text.ok { color: #2ecc71; }
+  #rows td .mobile-status-text.over { color: #e74c3c; }
+  #rows td .mobile-status-text.neutral { color: #ddd; }
   #rows tr * { min-width:0; }
 }
 </style>
@@ -1110,7 +1087,7 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<script id="mobile-v23-enhance">
+<script id="mobile-v24-enhance">
 (function(){
   function ensurePanel(tr, openIfEmpty){
     var panel = tr.querySelector('td.mobile-details-panel');
@@ -1144,6 +1121,7 @@
     });
     var paidInput = tr.querySelector('td:nth-child(3) input'); // المدفوع
     if (paidInput){ paidInput.value = sum || 0; }
+    updateStatus(tr);
   }
 
   function addDetailItem(tr){
@@ -1176,30 +1154,73 @@
       updatePaidFromPanel(tr);
     });
 
-    item.appendChild(name);  // right
-    item.appendChild(value); // middle
-    item.appendChild(del);   // left
+    item.appendChild(name);
+    item.appendChild(value);
+    item.appendChild(del);
     list.appendChild(item);
 
-    // hide placeholder and recalc
     panel.querySelector('.placeholder').style.display = 'none';
     updatePaidFromPanel(tr);
+  }
+
+  function hideLegacyButtons(tr){
+    var actionsCell = tr.querySelector('td:nth-child(6)');
+    if (!actionsCell) return;
+    Array.from(actionsCell.querySelectorAll('button, .btn, a')).forEach(function(b){
+      var t = (b.innerText||b.textContent||'').trim();
+      if (/تفصيل|تفاصيل|detail|\+/.test(t)) { b.classList.add('is-details-btn'); b.style.display='none'; }
+      if (/تم\s*الدفع/.test(t))           { b.classList.add('is-paid-btn');    b.style.display='none'; }
+    });
+  }
+
+  function statusElement(tr){
+    var el = tr.querySelector('.mobile-status-text');
+    if (!el){
+      el = document.createElement('div');
+      el.className = 'mobile-status-text neutral';
+      var cell = tr.querySelector('td:nth-child(5)');
+      if (cell) cell.appendChild(el);
+    }
+    return el;
+  }
+
+  function parseNum(v){ v=(v||'').toString().replace(/,/g,''); var n=parseFloat(v); return isNaN(n)?0:n; }
+
+  function updateStatus(tr){
+    var pEl = tr.querySelector('td:nth-child(2) input');
+    var dEl = tr.querySelector('td:nth-child(3) input');
+    var planned = parseNum(pEl && pEl.value);
+    var paid    = parseNum(dEl && dEl.value);
+    var el = statusElement(tr);
+    if (!el) return;
+    if (paid > planned){
+      var diff = (paid - planned).toFixed(2).replace(/\.00$/,'');
+      el.className = 'mobile-status-text over';
+      el.textContent = 'تجاوز المخطط بـ ' + diff;
+    } else if (planned > paid){
+      var left = (planned - paid).toFixed(2).replace(/\.00$/,'');
+      el.className = 'mobile-status-text ok';
+      el.textContent = 'المتبقي ' + left;
+    } else {
+      el.className = 'mobile-status-text neutral';
+      el.textContent = 'مطابق للمخطط';
+    }
+  }
+
+  function wireInputs(tr){
+    var p = tr.querySelector('td:nth-child(2) input');
+    var d = tr.querySelector('td:nth-child(3) input');
+    if (p) p.addEventListener('input', function(){ updateStatus(tr); });
+    if (d) d.addEventListener('input', function(){ updateStatus(tr); });
+    updateStatus(tr);
   }
 
   function enhanceRow(tr){
     if (!tr || tr.getAttribute('data-mobile-enhanced') === '1') return;
     var tds = tr.querySelectorAll('td'); if (tds.length < 6) return;
 
-    // Hide legacy details button in actions (mobile)
-    var actionsCell = tds[5];
-    if (actionsCell){
-      Array.from(actionsCell.querySelectorAll('button, .btn, a')).forEach(function(b){
-        var t = (b.innerText||b.textContent||'').trim();
-        if (/تفصيل|تفاصيل|detail|\+/.test(t)) { b.classList.add('is-details-btn'); b.style.display='none'; }
-      });
-    }
+    hideLegacyButtons(tr);
 
-    // Row 4 right: "تفصيل +"
     var addCell = document.createElement('td');
     addCell.className = 'mobile-details-input';
     var addBtn = document.createElement('button');
@@ -1207,7 +1228,6 @@
     addBtn.addEventListener('click', function(){ addDetailItem(tr); });
     addCell.appendChild(addBtn);
 
-    // Row 4 left: "التفاصيل" (toggle panel)
     var toggleCell = document.createElement('td');
     toggleCell.className = 'mobile-details-toggle';
     var toggleBtn = document.createElement('button');
@@ -1218,11 +1238,13 @@
     });
     toggleCell.appendChild(toggleBtn);
 
-    // Ensure panel exists (hidden initially)
     ensurePanel(tr, false);
 
     tr.appendChild(addCell);
     tr.appendChild(toggleCell);
+
+    wireInputs(tr);
+
     tr.setAttribute('data-mobile-enhanced','1');
   }
 
@@ -1256,7 +1278,6 @@
   else { install(); }
 })();
 </script>
-
 
 <script id="additem-hardening">
 (function(){
