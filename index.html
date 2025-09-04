@@ -76,39 +76,32 @@
 
 
 
-<style id="mobile-v34">
+
+
+
+<style id="mobile-v35">
 @media (max-width: 430px) {
   /* Lock horizontal scroll */
-  html, body {
-    margin: 0; padding: 0;
-    width: 100%; max-width: 100%;
-    overflow-x: hidden !important;
-  }
+  html, body { margin:0; padding:0; width:100%; max-width:100%; overflow-x:hidden !important; }
   @supports (overflow: clip) { body { overflow-x: clip; } }
-
   *, *::before, *::after { box-sizing: border-box; }
   img, canvas, svg, video { max-width: 100%; height: auto; }
 
-  /* Make #rows full-bleed (100vw) so it ignores any narrow parent container width */
+  /* Full-bleed table so parent width doesn't constrain us */
   #rows {
     width: 100vw !important;
     max-width: 100vw !important;
     position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    table-layout: auto;
-    border-collapse: separate;
-    border-spacing: 0;
-    direction: rtl;
+    left: 50%; right: 50%;
+    margin-left: -50vw; margin-right: -50vw;
+    table-layout: auto; border-collapse: separate; border-spacing: 0; direction: rtl;
   }
 
-  /* Card width fixed to 95vw and centered, independent of details visibility */
+  /* Card width: 92vw (was 95vw) */
   #rows tr {
     display: grid;
-    width: 95vw !important;
-    max-width: 95vw !important;
+    width: 92vw !important;
+    max-width: 92vw !important;
     margin: 10px auto !important;
     grid-template-areas:
       "name   planned"
@@ -117,14 +110,11 @@
       "detailsInput detailsToggle"
       "detailsPanel detailsPanel";
     grid-template-columns: 1fr 1fr;
-    column-gap: 10px;
-    row-gap: 8px;
+    column-gap: 10px; row-gap: 8px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 10px 12px;
-    align-items: start;
-    overflow: hidden;
+    border-radius: 12px; padding: 10px 12px;
+    align-items: start; overflow: hidden;
   }
 
   #rows thead, #rows th { display: none !important; }
@@ -138,82 +128,46 @@
 
   #rows td { position: relative; padding: 6px 4px; }
   #rows td::before {
-    display: block; font-size: 0.95rem; font-weight: 700; opacity: .95;
-    margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
+    display:block; font-size:.95rem; font-weight:700; opacity:.95;
+    margin-bottom:6px; line-height:1.15; color:#fff; text-align:center;
   }
-  #rows td:nth-child(1)::before { content: "المصروف"; }
-  #rows td:nth-child(2)::before { content: "المخطط"; }
-  #rows td:nth-child(3)::before { content: "المدفوع"; }
-  #rows td:nth-child(4)::before { content: "المتبقي"; }
-  #rows td:nth-child(5)::before { content: "الحالة"; }
-  #rows td:nth-child(6)::before { content: "الإجراءات"; }
+  #rows td:nth-child(1)::before { content:"المصروف"; }
+  #rows td:nth-child(2)::before { content:"المخطط"; }
+  #rows td:nth-child(3)::before { content:"المدفوع"; }
+  #rows td:nth-child(4)::before { content:"المتبقي"; }
+  #rows td:nth-child(5)::before { content:"الحالة"; }
+  #rows td:nth-child(6)::before { content:"الإجراءات"; }
 
-  /* Inputs */
-  #rows input, #rows select, #rows textarea {
-    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0;
-  }
+  #rows input, #rows select, #rows textarea { width:100%; max-width:100%; padding:8px 10px; min-width:0; }
 
-  /* Center labels/fields rows 1-4 */
   #rows td:nth-child(1),
   #rows td:nth-child(2),
   #rows td:nth-child(3),
-  #rows td:nth-child(4) {
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-  }
-  #rows td:nth-child(1) input { width: 16ch; max-width: 90%; margin: 0 auto; }
-  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
-    width: 8ch; max-width: 8ch; text-align: end; margin: 0 auto;
-  }
+  #rows td:nth-child(4) { display:flex; flex-direction:column; align-items:center; text-align:center; }
+  #rows td:nth-child(1) input { width:16ch; max-width:90%; margin:0 auto; }
+  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input { width:8ch; max-width:8ch; text-align:end; margin:0 auto; }
 
-  /* Actions centered; hide legacy details button only */
-  #rows td:nth-child(6) { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-  #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding: 8px 10px; line-height: 1.2; font-size: 0.95rem; }
-  #rows td:nth-child(6) .is-details-btn { display: none !important; }
+  #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+  #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:.95rem; }
+  #rows td:nth-child(6) .is-details-btn { display:none !important; }
 
-  /* Row4 labels/buttons centered */
-  #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align: center; width: 100%; }
-  #rows td.mobile-details-toggle::before { content: "التفاصيل"; text-align: center; width: 100%; }
-  #rows td.mobile-details-input, #rows td.mobile-details-toggle {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-  }
-  #rows td.mobile-details-input button, #rows td.mobile-details-toggle button {
-    padding: 8px 10px; -webkit-appearance: none; appearance: none;
-  }
+  #rows td.mobile-details-input::before  { content:"إضافة تفاصيل"; text-align:center; width:100%; }
+  #rows td.mobile-details-toggle::before { content:"التفاصيل"; text-align:center; width:100%; }
+  #rows td.mobile-details-input, #rows td.mobile-details-toggle { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  #rows td.mobile-details-input button, #rows td.mobile-details-toggle button { padding:8px 10px; -webkit-appearance:none; appearance:none; }
 
-  /* Row5 panel */
   #rows td.mobile-details-panel {
-    grid-area: detailsPanel;
-    border: 1px dashed rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 10px;
-    display: none;
-    width: 100%;
-    box-sizing: border-box;
+    grid-area: detailsPanel; border:1px dashed rgba(255,255,255,0.15);
+    border-radius:10px; padding:10px; display:none; width:100%; box-sizing:border-box;
   }
-  #rows td.mobile-details-panel .placeholder {
-    opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
-  }
-  #rows td.mobile-details-panel .details-list { display: flex; flex-direction: column; gap: 8px; }
-  #rows td.mobile-details-panel .detail-item {
-    display: grid; grid-template-columns: 1fr 9ch 34px; gap: 8px; align-items: center;
-  }
-  #rows td.mobile-details-panel .detail-item input[type="text"] { width: 100%; }
-  #rows td.mobile-details-panel .detail-item input[data-role="value"] {
-    width: 9ch; max-width: 9ch; text-align: end; direction: ltr;
-  }
-  #rows td.mobile-details-panel .detail-item button.del {
-    background: #c0392b; color: #fff; border: none; border-radius: 8px;
-    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1rem;
-  }
+  #rows td.mobile-details-panel .placeholder { opacity:.8; font-size:.95rem; text-align:center; padding:4px 0; }
+  #rows td.mobile-details-panel .details-list { display:flex; flex-direction:column; gap:8px; }
+  #rows td.mobile-details-panel .detail-item { display:grid; grid-template-columns:1fr 9ch 34px; gap:8px; align-items:center; }
+  #rows td.mobile-details-panel .detail-item input[type="text"] { width:100%; }
+  #rows td.mobile-details-panel .detail-item input[data-role="value"] { width:9ch; max-width:9ch; text-align:end; direction:ltr; }
+  #rows td.mobile-details-panel .detail-item button.del { background:#c0392b; color:#fff; border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; }
 
-  /* Status text */
-  #rows td .mobile-status-text { margin-top: 2px; font-size: .9rem; text-align: center; }
-  #rows td .mobile-status-text.ok { color: #2ecc71; }
-  #rows td .mobile-status-text.over { color: #e74c3c; }
-  #rows td .mobile-status-text.neutral { color: #ddd; }
-
-  #rows tr * { min-width: 0; max-width: 100%; }
+  #rows tr * { min-width:0; max-width:100%; }
 }
 </style>
 
