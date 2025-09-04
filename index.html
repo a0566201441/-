@@ -58,27 +58,32 @@
 
 
 
-<style id="mobile-v28">
+
+
+
+<style id="mobile-v29">
 @media (max-width: 430px) {
-  /* Always use the full visual viewport width, no more/no less */
+  /* Page takes full device width, without horizontal scroll */
   html, body {
     margin:0; padding:0;
-    width:100vw; max-width:100vw;
+    width:100%; max-width:100vw;
     overflow-x:hidden;
   }
 
-  /* Table always spans full screen width */
+  /* Table spans page width */
   #rows {
-    width:100vw; max-width:100vw;
-    table-layout: fixed; /* avoid shrink based on content */
+    width:100%; max-width:100vw;
+    table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
     direction: rtl;
   }
-  /* Each card (row) also spans full width */
+
+  /* Each card ~90% of page width, centered */
   #rows tr {
     display:grid;
-    width:100vw; max-width:100vw;
+    width:90vw; max-width:90vw;
+    margin: 10px auto; /* center horizontally */
     box-sizing: border-box;
     grid-template-areas:
       "name   planned"
@@ -93,7 +98,6 @@
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 10px 12px;
-    margin: 10px 0;
     align-items:start;
     overflow:hidden;
   }
@@ -159,7 +163,7 @@
     border-radius: 10px;
     padding: 10px;
     display: none;
-    width: 100%; /* ensure panel spans full width of the card */
+    width: 100%;
     box-sizing: border-box;
   }
   #rows td.mobile-details-panel .placeholder {
@@ -185,7 +189,6 @@
   #rows td .mobile-status-text.over { color: #e74c3c; }
   #rows td .mobile-status-text.neutral { color: #ddd; }
 
-  /* Prevent any child from triggering horizontal scroll */
   #rows tr * { min-width:0; max-width:100%; }
 }
 </style>
@@ -1134,8 +1137,13 @@
 
 
 
-<script id="mobile-v28-enhance">
+
+
+<script id="mobile-v29-enhance">
 (function(){
+  if (window.__mobileEnhanceV29Installed) return;
+  window.__mobileEnhanceV29Installed = true;
+
   function ensurePanel(tr, openIfEmpty){
     var panel = tr.querySelector('td.mobile-details-panel');
     if (!panel){
@@ -1312,35 +1320,33 @@
     }catch(e){}
   }
 
-  function fixAddButton(){
+  function patchAddButton(){
     var btn = document.getElementById('add');
     if (!btn) return;
-    var adding = false;
-    var orig = btn.onclick;
-    btn.onclick = null; // remove inline to avoid double-fire
+    // Replace with a clean clone to drop all previous listeners/inline handlers
+    var clone = btn.cloneNode(true);
+    clone.removeAttribute('onclick');
+    if (btn.parentNode) btn.parentNode.replaceChild(clone, btn);
+
     function handler(e){
-      try { e && e.preventDefault && e.preventDefault(); e && e.stopPropagation && e.stopPropagation(); } catch(_){}
-      if (adding) return false;
-      adding = true;
+      try{ e && e.preventDefault && e.preventDefault(); e && e.stopPropagation && e.stopPropagation(); }catch(_){}
+      if (clone.dataset.adding === '1') return false;
+      clone.dataset.adding = '1';
       try {
         if (typeof window.addItem === 'function') return window.addItem(e);
         if (typeof window.addItemInline === 'function') return window.addItemInline(e);
-        if (typeof orig === 'function') return orig.call(btn, e);
-        // last resort: try native click on any visible add in DOM
-        var alt = document.querySelector('[data-add], .add, button[onclick*="add"]');
-        if (alt && alt !== btn && typeof alt.click === 'function') alt.click();
       } finally {
-        setTimeout(function(){ adding = false; }, 250);
+        setTimeout(function(){ clone.dataset.adding = '0'; }, 300);
       }
       return false;
     }
-    btn.addEventListener('click', handler, {passive:false});
-    btn.addEventListener('touchend', handler, {passive:false});
+    // Use only 'click' to avoid touchend+click double fire
+    clone.addEventListener('click', handler, {passive:false});
   }
 
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
-    enhanceAll(); hideHeader(); fixAddButton();
+    enhanceAll(); hideHeader(); patchAddButton();
 
     var table = document.getElementById('rows');
     if (table){
