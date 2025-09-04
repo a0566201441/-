@@ -51,6 +51,16 @@
     #delta-chart-wrap{height:240px;position:relative;margin-top:16px}
     #history-chart,#delta-chart{width:100% !important;height:100% !important;display:block}
   </style>
+
+<style id="mobile-v56">
+@media (max-width: 430px){
+  .main-table{ white-space: normal !important; overflow-x: hidden !important; }
+  #rows, #rows tr { width: 100% !important; max-width: 100% !important; }
+  #rows tr { overflow-x: hidden !important; }
+  .main-table thead, .main-table thead *, #rows thead { display: none !important; }
+}
+</style>
+
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
@@ -926,7 +936,7 @@
         if(btn){
           const handler=(e)=>{ e.preventDefault(); e.stopPropagation(); addItem(); };
           btn.addEventListener('click', handler, {passive:false});
-          
+          btn.addEventListener('touchend', handler, {passive:false});
         }
       })();
       $('add-extra').addEventListener('click', addExtra);
@@ -992,23 +1002,26 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
-<script id="add-expense-fallback-delegation-v55">
+<script id="expense-add-direct-v56">
 (function(){
-  function safeAdd(e){
-    try{ if (typeof window.addItem==='function') return window.addItem(e); }catch(_){}
-    try{ if (typeof window.addItemInline==='function') return window.addItemInline(e); }catch(_){}
-    return false;
+  function $(id){ return document.getElementById(id); }
+  function bind(){
+    var btn = $('add'); if (!btn) return;
+    var clone = btn.cloneNode(true);
+    clone.removeAttribute('onclick'); clone.removeAttribute('ontouchend');
+    if (!clone.getAttribute('type')) clone.setAttribute('type','button');
+    btn.parentNode.replaceChild(clone, btn);
+    clone.addEventListener('click', function(ev){
+      try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+      try{
+        if (typeof window.addItem === 'function') return window.addItem(ev);
+        if (typeof window.addItemInline === 'function') return window.addItemInline(ev);
+      }catch(_){}
+      return false;
+    }, { passive:false });
   }
-  document.addEventListener('click', function(ev){
-    var t = ev.target && (ev.target.closest ? ev.target.closest('#add') : null);
-    if (!t) return;
-    try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
-    if (t.dataset && t.dataset.adding==='1') return;
-    if (t.dataset) t.dataset.adding='1';
-    try { safeAdd(ev); } finally {
-      setTimeout(function(){ if (t && t.dataset) t.dataset.adding='0'; }, 250);
-    }
-  }, { capture: true, passive: false });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
+  else bind();
 })();
 </script>
 
