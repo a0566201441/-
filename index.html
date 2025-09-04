@@ -116,6 +116,42 @@ td.mobile-details-panel { display: none; }
 }
 </style>
 
+
+<style id="mobile-v50">
+@media (max-width: 430px){
+  #rows tr{
+    grid-template-columns: 1fr 1fr !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+    padding: 12px 12px !important;
+  }
+  #rows td::before{
+    font-weight: 700 !important;
+    opacity: 1 !important;
+    margin-bottom: 6px !important;
+    text-align: center !important;
+  }
+  #rows td{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+  #rows td:nth-child(1) input{ width:14ch !important; max-width:90% !important; }
+  #rows td:nth-child(2) input,
+  #rows td:nth-child(3) input,
+  #rows td:nth-child(4) input{ width:7.5ch !important; max-width:7.5ch !important; text-align:end; }
+  #rows td:nth-child(5),
+  #rows td:nth-child(6){ align-items:center !important; }
+  #rows td:nth-child(6){ gap:8px !important; }
+  #rows td:nth-child(6) button{ width:100% !important; }
+  #rows td.mobile-details-input,
+  #rows td.mobile-details-toggle{ align-items:center !important; }
+  #rows td.mobile-details-input button,
+  #rows td.mobile-details-toggle button{ width:100% !important; }
+  #rows td.mobile-details-panel{ width:100% !important; box-sizing:border-box !important; }
+  #rows td.mobile-details-panel .detail-item{
+    grid-template-columns: 1fr 8ch 34px !important;
+  }
+  #rows tr *{ min-width:0 !important; max-width:100% !important; }
+}
+</style>
+
 </head>
 <body>
   <h1>💰 حاسبة الراتب والمصاريف</h1>
