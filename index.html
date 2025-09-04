@@ -70,34 +70,46 @@
 
 
 
-<style id="mobile-v32">
+
+
+
+
+
+
+<style id="mobile-v34">
 @media (max-width: 430px) {
-  /* Lock horizontal scroll and keep page exactly screen width */
+  /* Lock horizontal scroll */
   html, body {
     margin: 0; padding: 0;
     width: 100%; max-width: 100%;
     overflow-x: hidden !important;
   }
   @supports (overflow: clip) { body { overflow-x: clip; } }
+
   *, *::before, *::after { box-sizing: border-box; }
   img, canvas, svg, video { max-width: 100%; height: auto; }
 
-  /* Table spans full width */
+  /* Make #rows full-bleed (100vw) so it ignores any narrow parent container width */
   #rows {
-    width: 100%; max-width: 100%;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
     table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
     direction: rtl;
   }
 
-  /* Card ≈ 94% of page width, centered */
+  /* Card width fixed to 95vw and centered, independent of details visibility */
   #rows tr {
     display: grid;
-    width: 94%;
-    max-width: 94%;
-    margin: 10px auto;
-    box-sizing: border-box;
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 10px auto !important;
     grid-template-areas:
       "name   planned"
       "paid   due"
@@ -124,7 +136,7 @@
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
 
-  #rows td { position: relative; padding: 6px 4px; box-sizing: border-box; }
+  #rows td { position: relative; padding: 6px 4px; }
   #rows td::before {
     display: block; font-size: 0.95rem; font-weight: 700; opacity: .95;
     margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
@@ -138,7 +150,7 @@
 
   /* Inputs */
   #rows input, #rows select, #rows textarea {
-    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0; box-sizing: border-box;
+    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0;
   }
 
   /* Center labels/fields rows 1-4 */
@@ -161,7 +173,6 @@
   /* Row4 labels/buttons centered */
   #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align: center; width: 100%; }
   #rows td.mobile-details-toggle::before { content: "التفاصيل"; text-align: center; width: 100%; }
-  #rows td.mobile-details-toggle::after  { content: ""; }
   #rows td.mobile-details-input, #rows td.mobile-details-toggle {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
   }
@@ -202,7 +213,6 @@
   #rows td .mobile-status-text.over { color: #e74c3c; }
   #rows td .mobile-status-text.neutral { color: #ddd; }
 
-  /* Safety: no child exceeds card width */
   #rows tr * { min-width: 0; max-width: 100%; }
 }
 </style>
