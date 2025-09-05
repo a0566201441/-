@@ -43,7 +43,15 @@
 - No code logic or style content changed — purely structure for cleaner organization.
 
 
-## Step 4A — Light UI polish (visual only)
-- Introduced CSS variables and improved spacing, focus styles, and hover states.
-- Kept selectors intact to avoid breaking any behavior.
-- Mobile CSS got minor polish only.
+## Step 4B — Tooling (ESLint & Prettier)
+Visuals and behavior unchanged. Added configs to keep code style consistent:
+
+### Quick start
+```bash
+npm i -D eslint prettier eslint-config-prettier eslint-plugin-prettier
+npm run format      # format using Prettier
+npm run lint        # see lint warnings
+npm run lint:fix    # auto-fix where possible
+```
+- ESLint allows alerts/console because the app يعتمد عليها للتغذية الراجعة.
+- `Chart` مضافة كـ global readonly لتجنب أخطاء lint.
