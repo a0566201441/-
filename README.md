@@ -32,3 +32,18 @@
   <script src="app.js"></script>
   ```
 - No logic was modified. Pure refactor for clarity.
+
+
+## Step 3 — Project structure (no functional change)
+- Moved assets into folders:
+  - `assets/css/styles.css`
+  - `assets/css/mobile.css`
+  - `assets/js/app.js`
+- Updated `<link>` and `<script>` paths in `index.html` accordingly.
+- No code logic or style content changed — purely structure for cleaner organization.
+
+
+## Step 4A — Light UI polish (visual only)
+- Introduced CSS variables and improved spacing, focus styles, and hover states.
+- Kept selectors intact to avoid breaking any behavior.
+- Mobile CSS got minor polish only.
