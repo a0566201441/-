@@ -174,12 +174,18 @@
   #rows td:nth-child(4) {
     display:flex; flex-direction: column; align-items: center; text-align:center;
   }
+  
+  /* ## التعديل هنا: تم تكبير خانة المخطط لتثبيت العرض ## */
   #rows td:nth-child(1) input { width: 16ch; max-width: 90%; margin: 0 auto; }
-  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
-    width: 8ch; max-width: 8ch; text-align:end; margin: 0 auto;
+  #rows td:nth-child(2) input, 
+  #rows td:nth-child(3) input, 
+  #rows td:nth-child(4) input {
+    width: 16ch; /* تم تغيير القيمة من 8ch إلى 16ch */
+    max-width: 90%; 
+    text-align:end; 
+    margin: 0 auto;
   }
   
-  /* ## التعديل هنا: تم تغيير تنسيق الأزرار ## */
   #rows td:nth-child(6) { 
     display:flex; 
     flex-direction:column; 
