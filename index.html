@@ -83,6 +83,7 @@
     border: none;
     padding: 0;
     text-align: right;
+    min-width: 0; /* Override desktop min-width */
   }
   #extras-rows td:nth-child(1) {
     font-weight: bold;
@@ -109,7 +110,7 @@
           "notes  notes"
           "delete delete";
   }
-  #inv-rows td { border: none; padding: 0; }
+  #inv-rows td { border: none; padding: 0; min-width: 0; }
   #inv-rows td:nth-child(1) { grid-area: type; }
   #inv-rows td:nth-child(2) { grid-area: dest; }
   #inv-rows td:nth-child(3) { grid-area: amount; }
@@ -128,9 +129,8 @@
   }
   #rows tr {
     display:grid;
-    /* ## التعديل هنا: تم تطبيق طلبك بدقة ## */
-    width: calc(100% - 20px);
-    margin: 10px auto; /* auto تضمن التوسيط */
+    width: 100%;
+    margin: 10px auto;
     grid-template-areas:
       "name   planned"
       "paid   due"
@@ -146,7 +146,8 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    min-height: 440px;
+    /* ## التعديل هنا: تم زيادة الارتفاع لضمان الثبات ## */
+    min-height: 380px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -155,7 +156,7 @@
   #rows td:nth-child(4) { grid-area: due; }
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
-  #rows td { position:relative; padding: 6px 4px; }
+  #rows td { position:relative; padding: 6px 4px; min-width: 0; }
   #rows td::before {
     display:block; font-size: 0.95rem; font-weight: 700; opacity:.95;
     margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
@@ -1160,30 +1161,24 @@
   function patchAddButton(){
     var btn = document.getElementById('add');
     if (!btn) return;
+    // استبدال الزر بنسخة نظيفة لمنع أي تعارض في الأحداث
     var clone = btn.cloneNode(true);
-    clone.removeAttribute('onclick');
-    clone.removeAttribute('ontouchend');
-    if (btn.parentNode) btn.parentNode.replaceChild(clone, btn);
-
-    function handler(e){
-      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-      if (clone.dataset.adding === '1') return false;
-      clone.dataset.adding = '1';
-      try {
-        if (typeof window.addItem === 'function') return window.addItem();
-      } finally {
-        setTimeout(function(){ clone.dataset.adding = '0'; }, 300);
-      }
-      return false;
+    if (btn.parentNode) {
+      btn.parentNode.replaceChild(clone, btn);
     }
-    clone.addEventListener('click', handler, {passive:false});
+    // إضافة معالج الحدث الصحيح
+    clone.addEventListener('click', addItem);
   }
 
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
+    
+    // تم إصلاح زر الإضافة هنا ليعمل بشكل صحيح
+    patchAddButton();
+
     enhanceAll(); 
     hideHeader(); 
-    patchAddButton();
+    
     var tableBody = document.getElementById('rows').querySelector('tbody');
     if (tableBody){
       var obs = new MutationObserver(function(mutations){
