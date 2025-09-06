@@ -69,6 +69,7 @@
   }
   #extras-rows tr {
     display: grid;
+    /* تعديل: تم ضبط الأعمدة لتناسب الشاشة ومنع الحركة الأفقية */
     grid-template-columns: 1fr 90px auto; 
     gap: 10px;
     width: 100%;
@@ -145,8 +146,8 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    /* ## التعديل هنا: تثبيت أقل ارتفاع للبطاقة لمنع تغير حجمها ## */
-    min-height: 300px;
+    /* ## التعديل هنا: زيادة أقل ارتفاع للبطاقة لتثبيت حجمها ## */
+    min-height: 340px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -951,7 +952,7 @@
       });
       $('delete-cat').addEventListener('click', deleteSelectedCat);
       
-      // $('add') is handled by mobile-enhance script
+      $('add').addEventListener('click', addItem);
       
       $('add-extra').addEventListener('click', addExtra);
       $('add-inv').addEventListener('click', addInvestment);
