@@ -146,7 +146,7 @@
     align-items:start;
     overflow:hidden;
     /* ## التعديل هنا: زيادة أقل ارتفاع للبطاقة لتثبيت حجمها ## */
-    min-height: 420px;
+    min-height: 440px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -657,11 +657,6 @@
       $('inv-type').value=''; $('inv-dest').value=''; $('inv-amount').value=''; $('inv-source').value=''; $('inv-notes').value='';
       renderInvestments(); persist();
       alert('تمت إضافة الاستثمار ✅');
-    }
-    function addItemInline(e){
-      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch{}
-      try{ addItem(); }catch(err){ try{ console && console.error && console.error(err); }catch{} }
-      return false;
     }
     function addItem(){
       try{ if(document.activeElement) document.activeElement.blur(); }catch{}
