@@ -129,8 +129,9 @@
   }
   #rows tr {
     display:grid;
-    width: 100%;
-    margin: 10px auto;
+    /* ## التعديل هنا: تم تطبيق طلبك بدقة ## */
+    width: calc(100% - 20px);
+    margin: 10px auto; /* auto تضمن التوسيط */
     grid-template-areas:
       "name   planned"
       "paid   due"
@@ -146,6 +147,7 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
+    min-height: 440px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -174,32 +176,11 @@
   #rows td:nth-child(4) {
     display:flex; flex-direction: column; align-items: center; text-align:center;
   }
-  
-  /* ## التعديل هنا: تم تكبير خانة المخطط لتثبيت العرض ## */
   #rows td:nth-child(1) input { width: 16ch; max-width: 90%; margin: 0 auto; }
-  #rows td:nth-child(2) input, 
-  #rows td:nth-child(3) input, 
-  #rows td:nth-child(4) input {
-    width: 16ch; /* تم تغيير القيمة من 8ch إلى 16ch */
-    max-width: 90%; 
-    text-align:end; 
-    margin: 0 auto;
+  #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
+    width: 8ch; max-width: 8ch; text-align:end; margin: 0 auto;
   }
-  
-  #rows td:nth-child(6) { 
-    display:flex; 
-    flex-direction:column; 
-    align-items:center; 
-    gap:8px; 
-    text-align:center; 
-  }
-  .action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    width: 100%;
-  }
-
+  #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
   #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
   #rows td:nth-child(6) .is-details-btn { display:none !important; }
   #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align:center; width:100%; }
@@ -211,23 +192,14 @@
   #rows td.mobile-details-input button, #rows td.mobile-details-toggle button {
     padding:8px 10px; -webkit-appearance:none; appearance:none;
   }
-  
   #rows td.mobile-details-panel {
     grid-area: detailsPanel;
     border: 1px dashed rgba(255,255,255,0.15);
     border-radius: 10px;
     padding: 10px;
+    display: none;
     width: 100%;
-    transition: opacity 0.2s, visibility 0.2s;
-    visibility: hidden;
-    opacity: 0;
-    min-height: 120px;
   }
-  #rows td.mobile-details-panel.visible {
-      visibility: visible;
-      opacity: 1;
-  }
-
   #rows td.mobile-details-panel .placeholder {
     opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
   }
