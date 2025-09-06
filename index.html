@@ -146,8 +146,6 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    /* ## التعديل هنا: تم زيادة أقل ارتفاع للبطاقة لتثبيت حجمها بشكل نهائي ## */
-    min-height: 450px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -180,7 +178,22 @@
   #rows td:nth-child(2) input, #rows td:nth-child(3) input, #rows td:nth-child(4) input {
     width: 8ch; max-width: 8ch; text-align:end; margin: 0 auto;
   }
-  #rows td:nth-child(6) { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+  
+  /* ## التعديل هنا: تم تغيير تنسيق الأزرار ## */
+  #rows td:nth-child(6) { 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    gap:8px; 
+    text-align:center; 
+  }
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+  }
+
   #rows td:nth-child(6) .btn, #rows td:nth-child(6) button { padding:8px 10px; line-height:1.2; font-size:0.95rem; }
   #rows td:nth-child(6) .is-details-btn { display:none !important; }
   #rows td.mobile-details-input::before  { content: "إضافة تفاصيل"; text-align:center; width:100%; }
@@ -193,7 +206,6 @@
     padding:8px 10px; -webkit-appearance:none; appearance:none;
   }
   
-  /* ## التعديل هنا: تم تغيير طريقة إخفاء لوحة التفاصيل ## */
   #rows td.mobile-details-panel {
     grid-area: detailsPanel;
     border: 1px dashed rgba(255,255,255,0.15);
@@ -201,12 +213,10 @@
     padding: 10px;
     width: 100%;
     transition: opacity 0.2s, visibility 0.2s;
-    /* بشكل افتراضي اللوحة مخفية ولكن تحجز مساحتها */
     visibility: hidden;
     opacity: 0;
-    min-height: 100px; /* لحجز مساحة كافية حتى وهي فارغة */
+    min-height: 120px; /* A minimum height to reserve space */
   }
-  /* عند إضافة هذا الكلاس، تظهر اللوحة */
   #rows td.mobile-details-panel.visible {
       visibility: visible;
       opacity: 1;
@@ -535,9 +545,11 @@
           <td class="col-due due">${Math.max(0,(+it.planned||0)-(+it.paid||0))}</td>
           <td class="status ${st.cls}">${st.text}</td>
           <td>
-            <button class="primary pay-one">تم الدفع</button>
-            <button class="ghost sub-btn">➕ تفصيل</button>
-            <button class="danger del">حذف</button>
+            <div class="action-buttons">
+              <button class="primary pay-one">تم الدفع</button>
+              <button class="danger del">حذف</button>
+            </div>
+            <button class="ghost sub-btn" style="display:none;">➕ تفصيل</button>
           </td>
         `;
 
@@ -569,14 +581,6 @@
         });
         delBtn.addEventListener('click',()=>{
           state.items = state.items.filter(x=>x!==it);
-          renderExpenses(); updateTotals(); persist();
-        });
-        subBtn.addEventListener('click',()=>{
-          const subName=normalizeCat(prompt('اسم التفصيل:')||''); if(!subName) return;
-          const subAmount=parseFloat(prompt('المبلغ لهذا التفصيل:'))||0;
-          it.subItems.push({name:subName, amount:subAmount});
-          it.paid=(+it.paid||0)+subAmount;
-          paInp.value=it.paid;
           renderExpenses(); updateTotals(); persist();
         });
         tb.appendChild(tr);
@@ -1051,7 +1055,7 @@
     tr.dataset.detailLock = '1';
     setTimeout(function(){ tr.dataset.detailLock = '0'; }, 300);
     var panel = ensurePanel(tr);
-    panel.classList.add('visible'); // Make sure panel is visible
+    panel.classList.add('visible');
     var list = panel.querySelector('.details-list');
     var item = document.createElement('div');
     item.className = 'detail-item';
