@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>حاسبة الراتب والمصاريف (v5 - معدل)</title>
+  <title>حاسبة الراتب والمصاريف (v5 - نهائي)</title>
   <style>
+    /* ## التعديل الأول هنا: إضافة قاعدة لضمان ثبات الأحجام ## */
+    * {
+      box-sizing: border-box;
+    }
+    
     body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:#0b0f14;color:#e9eef5;margin:0;padding:20px}
     h1{margin-bottom:16px;font-size:1.4rem;color:#fff}
     .card{background:#121822;border:1px solid #1e2a3a;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
@@ -52,13 +57,15 @@
 
 <style id="mobile-v29">
 @media (max-width: 430px) {
+  /* ## التعديل الثاني هنا: إضافة إطار حول محتوى الصفحة ## */
   html, body {
-    margin:0; padding:0;
-    width:100%; max-width:100vw;
+    margin:0;
+    padding: 10px; /* تم تغيير القيمة من 0 إلى 10px */
+    width:100%;
+    max-width:100vw;
     overflow-x:hidden;
   }
   
-  /* ## التعديل الأول هنا: إخفاء رأس جدول الدخل الإضافي وتنسيق صفوفه ## */
   #extras-table thead {
     display: none;
   }
@@ -66,10 +73,9 @@
     display: grid;
     grid-template-columns: 1fr auto auto;
     gap: 10px;
-    width: 90vw;
+    width: 100%; /* تم تغيير القيمة من 90vw إلى 100% لتناسب الإطار الجديد */
     margin: 10px auto;
     padding: 15px;
-    box-sizing: border-box;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -88,11 +94,10 @@
     max-width: 120px;
     text-align: end;
   }
-  /* نهاية التعديل الأول */
-
 
   #rows {
-    width:100%; max-width:100vw;
+    width:100%;
+    max-width:100vw;
     table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
@@ -100,9 +105,8 @@
   }
   #rows tr {
     display:grid;
-    width:90vw; max-width:90vw;
+    width: 100%; /* تم تغيير القيمة من 90vw إلى 100% لتناسب الإطار الجديد */
     margin: 10px auto;
-    box-sizing: border-box;
     grid-template-areas:
       "name   planned"
       "paid   due"
@@ -126,7 +130,7 @@
   #rows td:nth-child(4) { grid-area: due; }
   #rows td:nth-child(5) { grid-area: status; }
   #rows td:nth-child(6) { grid-area: actions; }
-  #rows td { position:relative; padding: 6px 4px; box-sizing: border-box; }
+  #rows td { position:relative; padding: 6px 4px; }
   #rows td::before {
     display:block; font-size: 0.95rem; font-weight: 700; opacity:.95;
     margin-bottom: 6px; line-height: 1.15; color: #fff; text-align: center;
@@ -138,7 +142,7 @@
   #rows td:nth-child(5)::before { content: "الحالة"; }
   #rows td:nth-child(6)::before { content: "الإجراءات"; }
   #rows input, #rows select, #rows textarea {
-    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0; box-sizing: border-box;
+    width: 100%; max-width: 100%; padding: 8px 10px; min-width: 0;
   }
   #rows td:nth-child(1),
   #rows td:nth-child(2),
@@ -169,7 +173,6 @@
     padding: 10px;
     display: none;
     width: 100%;
-    box-sizing: border-box;
   }
   #rows td.mobile-details-panel .placeholder {
     opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
@@ -487,7 +490,6 @@
         const st=statusOf(it);
         const tr=document.createElement('tr');
         
-        /* ## التعديل الثاني هنا: إزالة السطر الذي يحتوي على paid-mark ## */
         tr.innerHTML=`
           <td><input type="text" value="${it.name||''}" class="name-input"></td>
           <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input"></td>
