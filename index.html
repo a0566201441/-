@@ -478,8 +478,6 @@
         -webkit-appearance: none;
         appearance: none;
       }
-
-      /* --- ✨ الإصلاح الرئيسي للفراغ السفلي --- */
       #rows td.mobile-details-panel {
         grid-area: detailsPanel;
         border: 1px dashed rgba(255, 255, 255, 0.15);
@@ -488,19 +486,18 @@
         transition: all 0.25s ease-in-out;
         visibility: hidden;
         opacity: 0;
-        max-height: 0; /* يجعل العنصر يتقلص تماماً عند إخفائه */
-        padding: 0 10px; /* إزالة الحشوة العمودية عند إخفائه */
-        overflow: hidden; /* ضروري لعملية التقلص */
-        min-height: 0; /* إلغاء الحد الأدنى للارتفاع عند إخفائه */
+        max-height: 0;
+        padding: 0 10px;
+        overflow: hidden;
+        min-height: 0;
       }
       #rows td.mobile-details-panel.visible {
         visibility: visible;
         opacity: 1;
-        max-height: none; /* تم إلغاء الحد الأقصى للسماح بالتمدد بحرية */
-        padding: 10px; /* إعادة الحشوة عند ظهوره */
-        min-height: 120px; /* إعادة الحد الأدنى للارتفاع عند ظهوره */
+        max-height: none;
+        padding: 10px;
+        min-height: 120px;
       }
-
       #rows td.mobile-details-panel .placeholder {
         opacity: .8;
         font-size: .95rem;
@@ -652,6 +649,7 @@
       </thead>
       <tbody></tbody>
     </table>
+    <button id="save-all-changes" class="primary" style="width: 100%; margin-top: 15px; padding: 12px; font-size: 1.1rem;">💾 حفظ التعديلات</button>
     <div class="totals">
       <div><div class="pill">إجمالي المخطط</div><h3 id="t_planned">0</h3></div>
       <div><div class="pill">إجمالي المدفوع</div><h3 id="t_paid">0</h3></div>
@@ -850,6 +848,11 @@
       save(STORE_KEY, state)
     }
 
+    function saveAllChanges() {
+        persist();
+        alert('تم حفظ جميع التعديلات ✅');
+    }
+
     function normalizeCat(s) {
       return (s || '').trim().replace(/\s+/g, ' ');
     }
@@ -969,9 +972,10 @@
     function renderExpenses() {
       const tb = $('rows').querySelector('tbody');
       tb.innerHTML = '';
-      state.items.forEach((it) => {
+      state.items.forEach((it, index) => {
         const st = statusOf(it);
         const tr = document.createElement('tr');
+        tr.dataset.index = index;
         tr.innerHTML = `
           <td><input type="text" value="${it.name||''}" class="name-input"></td>
           <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input"></td>
@@ -1002,11 +1006,9 @@
           statusCell.textContent = st.text;
           statusCell.className = 'status ' + st.cls;
           updateTotals();
-          persist();
         }
         nameInp.addEventListener('input', e => {
           it.name = normalizeCat(e.target.value);
-          persist();
         });
         pInp.addEventListener('input', e => {
           it.planned = +e.target.value || 0;
@@ -1020,6 +1022,7 @@
           it.paid = +it.planned || 0;
           paInp.value = it.paid;
           refreshRow();
+          persist();
         });
         delBtn.addEventListener('click', () => {
           state.items = state.items.filter(x => x !== it);
@@ -1028,7 +1031,10 @@
           persist();
         });
         tb.appendChild(tr);
-        if (it.subItems && it.subItems.length) {
+
+        // ✨ الإصلاح: التأكد من أن هذا الكود يعمل فقط على شاشة الكمبيوتر ✨
+        const isDesktop = window.matchMedia('(min-width: 431px)').matches;
+        if (isDesktop && it.subItems && it.subItems.length) {
           const row = document.createElement('tr');
           const cell = document.createElement('td');
           cell.colSpan = 6;
@@ -1077,7 +1083,6 @@
         amountInp.addEventListener('input', e => {
           ex.amount = +e.target.value || 0;
           updateTotals();
-          persist();
         });
         delBtn.addEventListener('click', () => {
           state.extras.splice(idx, 1);
@@ -1104,26 +1109,11 @@
           <td><textarea class="inv-notes-input" style="min-height:48px">${inv.notes||''}</textarea></td>
           <td><button class="danger del-inv">حذف</button></td>
         `;
-        tr.querySelector('.inv-type-input').addEventListener('input', e => {
-          inv.type = normalizeCat(e.target.value);
-          persist();
-        });
-        tr.querySelector('.inv-dest-input').addEventListener('input', e => {
-          inv.dest = normalizeCat(e.target.value);
-          persist();
-        });
-        tr.querySelector('.inv-amount-input').addEventListener('input', e => {
-          inv.amount = +e.target.value || 0;
-          persist();
-        });
-        tr.querySelector('.inv-source-input').addEventListener('input', e => {
-          inv.source = normalizeCat(e.target.value);
-          persist();
-        });
-        tr.querySelector('.inv-notes-input').addEventListener('input', e => {
-          inv.notes = e.target.value;
-          persist();
-        });
+        tr.querySelector('.inv-type-input').addEventListener('input', e => { inv.type = normalizeCat(e.target.value); });
+        tr.querySelector('.inv-dest-input').addEventListener('input', e => { inv.dest = normalizeCat(e.target.value); });
+        tr.querySelector('.inv-amount-input').addEventListener('input', e => { inv.amount = +e.target.value || 0; });
+        tr.querySelector('.inv-source-input').addEventListener('input', e => { inv.source = normalizeCat(e.target.value); });
+        tr.querySelector('.inv-notes-input').addEventListener('input', e => { inv.notes = e.target.value; });
         tr.querySelector('.del-inv').addEventListener('click', () => {
           state.investments.splice(idx, 1);
           renderInvestments();
@@ -1163,9 +1153,7 @@
     }
 
     function addItem() {
-      try {
-        if (document.activeElement) document.activeElement.blur();
-      } catch {}
+      try { if (document.activeElement) document.activeElement.blur(); } catch {}
       const selEl = $('name');
       const selVal = selEl && selEl.value ? selEl.value : '';
       const customRaw = $('name-custom').value || '';
@@ -1666,53 +1654,41 @@
       function syncSalary(val) {
         state.salary = +val || 0;
         updateTotals();
-        persist();
       }
       const sal2 = $('salary2');
       if (sal2) sal2.addEventListener('input', e => syncSalary(e.target.value));
-      $('save-custom-cat').addEventListener('click', () => {
-        const custom = normalizeCat($('name-custom').value || '');
-        if (!custom) {
-          alert('اكتب اسم الفئة أولاً');
-          return;
-        }
+      
+      $('save-custom-cat').addEventListener('click', ()=>{
+        const custom = normalizeCat($('name-custom').value||'');
+        if(!custom){ alert('اكتب اسم الفئة أولاً'); return; }
         addCustomCatIfNeeded(custom);
-        $('name-custom').value = '';
+        $('name-custom').value='';
         alert('تم حفظ الفئة ضمن الخيارات ✅');
       });
       $('delete-cat').addEventListener('click', deleteSelectedCat);
+      
       $('add').addEventListener('click', addItem);
       $('add-extra').addEventListener('click', addExtra);
       $('add-inv').addEventListener('click', addInvestment);
+      
       $('save-template').addEventListener('click', saveCurrentAsTemplate);
       $('apply-template').addEventListener('click', applyTemplate);
       $('delete-template').addEventListener('click', deleteTemplate);
+      
       $('close-month').addEventListener('click', closeMonth);
-      $('history-select').addEventListener('change', () => {
-        renderHistory();
-      });
+      $('history-select').addEventListener('change', ()=>{ renderHistory(); });
       $('delete-month').addEventListener('click', deleteSelectedMonth);
-      $('reset').addEventListener('click', () => {
-        if (confirm('تأكيد التفريغ؟')) {
-          state = {
-            salary: 0,
-            items: [],
-            extras: [],
-            investments: []
-          };
-          renderExpenses();
-          renderExtras();
-          renderInvestments();
-          updateTotals();
-          persist();
-        }
-      });
+      
+      $('reset').addEventListener('click', ()=>{ if(confirm('تأكيد التفريغ؟')){ state={salary:0,items:[],extras:[],investments:[]}; renderExpenses(); renderExtras(); renderInvestments(); updateTotals(); persist(); } });
+      
       $('export-history').addEventListener('click', exportHistoryJSON);
       $('export-csv').addEventListener('click', exportCSV);
-      $('import-history-btn').addEventListener('click', () => $('import-history').click());
+      $('import-history-btn').addEventListener('click', ()=> $('import-history').click());
       $('import-history').addEventListener('change', importHistory);
+      
+      $('save-all-changes').addEventListener('click', saveAllChanges);
     }
-
+    
     function deleteSelectedMonth() {
       const sel = $('history-select');
       if (!sel || !sel.value) return;
@@ -1765,6 +1741,76 @@
       if (window.__mobileEnhanceV29Installed) return;
       window.__mobileEnhanceV29Installed = true;
 
+      function saveSubItemsToState(tr) {
+          if (!tr) return;
+          var index = parseInt(tr.dataset.index, 10);
+          if (isNaN(index) || !state.items[index]) {
+              return;
+          }
+          var panel = tr.querySelector('td.mobile-details-panel');
+          if (!panel) return;
+          var subItems = [];
+          var detailItems = panel.querySelectorAll('.detail-item');
+          detailItems.forEach(function(item) {
+              var nameInput = item.querySelector('input[type="text"]');
+              var valueInput = item.querySelector('input[data-role="value"]');
+              var name = (nameInput.value || '').trim();
+              var amount = parseFloat(valueInput.value || 0);
+              if (name || amount > 0) {
+                  subItems.push({ name: name, amount: amount });
+              }
+          });
+          state.items[index].subItems = subItems;
+      }
+
+      function createSubItemElements(subItem, tr) {
+          var itemEl = document.createElement('div');
+          itemEl.className = 'detail-item';
+          var name = document.createElement('input');
+          name.type = 'text';
+          name.placeholder = 'اسم التفصيل';
+          name.value = subItem.name || '';
+          name.addEventListener('input', function() { saveSubItemsToState(tr); });
+          var value = document.createElement('input');
+          value.type = 'number';
+          value.setAttribute('data-role', 'value');
+          value.placeholder = 'القيمة';
+          value.value = subItem.amount || '';
+          value.addEventListener('input', function() {
+              updatePaidFromPanel(tr);
+              saveSubItemsToState(tr);
+          });
+          var del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'del';
+          del.textContent = '×';
+          del.addEventListener('click', function() {
+              itemEl.remove();
+              updatePaidFromPanel(tr);
+              saveSubItemsToState(tr);
+          });
+          itemEl.appendChild(name);
+          itemEl.appendChild(value);
+          itemEl.appendChild(del);
+          return itemEl;
+      }
+
+      function loadSubItemsIntoPanel(tr) {
+          var index = parseInt(tr.dataset.index, 10);
+          if (isNaN(index) || !state.items[index] || !state.items[index].subItems) return;
+          var itemData = state.items[index];
+          if (itemData.subItems.length > 0) {
+              var panel = ensurePanel(tr);
+              var list = panel.querySelector('.details-list');
+              list.innerHTML = '';
+              itemData.subItems.forEach(function(subItem) {
+                  var subItemEl = createSubItemElements(subItem, tr);
+                  list.appendChild(subItemEl);
+              });
+              panel.querySelector('.placeholder').style.display = 'none';
+          }
+      }
+
       function ensurePanel(tr) {
         var panel = tr.querySelector('td.mobile-details-panel');
         if (!panel) {
@@ -1795,6 +1841,11 @@
         if (paidInput) {
           paidInput.value = sum || 0;
         }
+        var index = parseInt(tr.dataset.index, 10);
+        if(!isNaN(index) && state.items[index]){
+          state.items[index].paid = sum;
+          updateTotals();
+        }
         updateStatus(tr);
       }
 
@@ -1807,39 +1858,13 @@
         var panel = ensurePanel(tr);
         panel.classList.add('visible');
         var list = panel.querySelector('.details-list');
-        var item = document.createElement('div');
-        item.className = 'detail-item';
-        var name = document.createElement('input');
-        name.type = 'text';
-        name.placeholder = 'اسم التفصيل';
-        var value = document.createElement('input');
-        value.type = 'number';
-        value.setAttribute('data-role', 'value');
-        value.placeholder = 'القيمة';
-        value.inputMode = 'numeric';
-        value.pattern = '[0-9]*';
-        value.addEventListener('input', function() {
-          updatePaidFromPanel(tr);
-        });
-        var del = document.createElement('button');
-        del.type = 'button';
-        del.className = 'del';
-        del.textContent = '×';
-        del.addEventListener('click', function() {
-          item.remove();
-          var panel = ensurePanel(tr);
-          var list = panel.querySelector('.details-list');
-          panel.querySelector('.placeholder').style.display = list.children.length > 0 ? 'none' : 'block';
-          updatePaidFromPanel(tr);
-        });
-        item.appendChild(name);
-        item.appendChild(value);
-        item.appendChild(del);
-        list.appendChild(item);
+        var newSubItemEl = createSubItemElements({name: '', amount: ''}, tr);
+        list.appendChild(newSubItemEl);
         panel.querySelector('.placeholder').style.display = 'none';
         updatePaidFromPanel(tr);
+        saveSubItemsToState(tr);
       }
-
+      
       function hideLegacyButtons(tr) {
         var actionsCell = tr.querySelector('td:nth-child(6)');
         if (!actionsCell) return;
@@ -1932,6 +1957,7 @@
         tr.appendChild(addCell);
         tr.appendChild(toggleCell);
         wireInputs(tr);
+        loadSubItemsIntoPanel(tr);
         tr.setAttribute('data-mobile-enhanced', '1');
       }
 
@@ -1951,21 +1977,8 @@
         } catch (e) {}
       }
 
-      function patchAddButton() {
-        var btn = document.getElementById('add');
-        if (!btn) return;
-        var clone = btn.cloneNode(true);
-        clone.removeAttribute('onclick');
-        clone.removeAttribute('ontouchend');
-        if (btn.parentNode) {
-          btn.parentNode.replaceChild(clone, btn);
-        }
-        clone.addEventListener('click', addItem);
-      }
-
       function install() {
         if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
-        patchAddButton();
         enhanceAll();
         hideHeader();
         var tableBody = document.getElementById('rows').querySelector('tbody');
@@ -1995,5 +2008,4 @@
   </script>
 </body>
 </html>
-
 
