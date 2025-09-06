@@ -215,7 +215,7 @@
     transition: opacity 0.2s, visibility 0.2s;
     visibility: hidden;
     opacity: 0;
-    min-height: 120px; /* A minimum height to reserve space */
+    min-height: 120px;
   }
   #rows td.mobile-details-panel.visible {
       visibility: visible;
@@ -805,7 +805,7 @@
           i.subItems.forEach(s=>{ rows+=`<tr><td>↳ ${s.name}</td><td colspan="4">${s.amount}</td></tr>` });
         }
       });
-      const exSum = (snap.extras||[]).reduce((a,e)=>a+(+e.amount||0),0);
+      const exSum = (s.extras||[]).reduce((a,e)=>a+(+e.amount||0),0);
       if(exSum>0){
         rows += `<tr><td><span class="pill">دخل</span> مجموع الدخل الإضافي</td><td>—</td><td>${exSum}</td><td>—</td><td>دخل</td></tr>`;
       }
