@@ -128,8 +128,9 @@
   }
   #rows tr {
     display:grid;
-    width: 100%;
-    margin: 10px auto;
+    /* ## التعديل هنا: تم تطبيق طلبك بدقة ## */
+    width: calc(100% - 20px);
+    margin: 10px auto; /* auto تضمن التوسيط */
     grid-template-areas:
       "name   planned"
       "paid   due"
@@ -145,7 +146,6 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    /* ## التعديل هنا: زيادة أقل ارتفاع للبطاقة لتثبيت حجمها ## */
     min-height: 440px;
   }
   #rows thead, #rows th { display: none !important; }
