@@ -146,8 +146,8 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    /* ## التعديل هنا: تم زيادة الارتفاع لضمان الثبات ## */
-    min-height: 380px;
+    /* ## التعديل هنا: زيادة أقل ارتفاع للبطاقة لتثبيت حجمها بشكل نهائي ## */
+    min-height: 450px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -1161,19 +1161,18 @@
   function patchAddButton(){
     var btn = document.getElementById('add');
     if (!btn) return;
-    // استبدال الزر بنسخة نظيفة لمنع أي تعارض في الأحداث
     var clone = btn.cloneNode(true);
+    clone.removeAttribute('onclick');
+    clone.removeAttribute('ontouchend');
     if (btn.parentNode) {
       btn.parentNode.replaceChild(clone, btn);
     }
-    // إضافة معالج الحدث الصحيح
     clone.addEventListener('click', addItem);
   }
 
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
     
-    // تم إصلاح زر الإضافة هنا ليعمل بشكل صحيح
     patchAddButton();
 
     enhanceAll(); 
