@@ -83,7 +83,7 @@
     border: none;
     padding: 0;
     text-align: right;
-    min-width: 0; /* Override desktop min-width */
+    min-width: 0;
   }
   #extras-rows td:nth-child(1) {
     font-weight: bold;
@@ -146,8 +146,6 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
-    /* ## التعديل هنا: زيادة أقل ارتفاع للبطاقة لتثبيت حجمها بشكل نهائي ## */
-    min-height: 450px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -192,14 +190,26 @@
   #rows td.mobile-details-input button, #rows td.mobile-details-toggle button {
     padding:8px 10px; -webkit-appearance:none; appearance:none;
   }
+  
+  /* ## التعديل هنا: تم تغيير طريقة إخفاء لوحة التفاصيل ## */
   #rows td.mobile-details-panel {
     grid-area: detailsPanel;
     border: 1px dashed rgba(255,255,255,0.15);
     border-radius: 10px;
     padding: 10px;
-    display: none;
     width: 100%;
+    transition: opacity 0.2s, visibility 0.2s;
+    /* بشكل افتراضي اللوحة مخفية ولكن تحجز مساحتها */
+    visibility: hidden;
+    opacity: 0;
+    min-height: 100px; /* لحجز مساحة كافية حتى وهي فارغة */
   }
+  /* عند إضافة هذا الكلاس، تظهر اللوحة */
+  #rows td.mobile-details-panel.visible {
+      visibility: visible;
+      opacity: 1;
+  }
+
   #rows td.mobile-details-panel .placeholder {
     opacity: .8; font-size: .95rem; text-align: center; padding: 4px 0;
   }
@@ -1005,7 +1015,7 @@
 (function(){
   if (window.__mobileEnhanceV29Installed) return;
   window.__mobileEnhanceV29Installed = true;
-  function ensurePanel(tr, openIfEmpty){
+  function ensurePanel(tr){
     var panel = tr.querySelector('td.mobile-details-panel');
     if (!panel){
       panel = document.createElement('td');
@@ -1019,10 +1029,6 @@
       panel.appendChild(ph);
       tr.appendChild(panel);
     }
-    var list = panel.querySelector('.details-list');
-    var ph = panel.querySelector('.placeholder');
-    if (openIfEmpty === true) panel.style.display = 'block';
-    ph.style.display = list.children.length > 0 ? 'none' : 'block';
     return panel;
   }
   function updatePaidFromPanel(tr){
@@ -1042,7 +1048,8 @@
     if (tr.dataset.detailLock === '1') return;
     tr.dataset.detailLock = '1';
     setTimeout(function(){ tr.dataset.detailLock = '0'; }, 300);
-    var panel = ensurePanel(tr, true);
+    var panel = ensurePanel(tr);
+    panel.classList.add('visible'); // Make sure panel is visible
     var list = panel.querySelector('.details-list');
     var item = document.createElement('div');
     item.className = 'detail-item';
@@ -1062,7 +1069,7 @@
     del.textContent = '×';
     del.addEventListener('click', function(){
       item.remove();
-      var panel = ensurePanel(tr, false);
+      var panel = ensurePanel(tr);
       var list = panel.querySelector('.details-list');
       panel.querySelector('.placeholder').style.display = list.children.length > 0 ? 'none' : 'block';
       updatePaidFromPanel(tr);
@@ -1135,11 +1142,11 @@
     var toggleBtn = document.createElement('button');
     toggleBtn.type = 'button'; toggleBtn.className = 'btn'; toggleBtn.textContent = 'إظهار/إخفاء';
     toggleBtn.addEventListener('click', function(){
-      var panel = ensurePanel(tr, false);
-      panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+      var panel = ensurePanel(tr);
+      panel.classList.toggle('visible');
     });
     toggleCell.appendChild(toggleBtn);
-    ensurePanel(tr, false);
+    ensurePanel(tr);
     tr.appendChild(addCell);
     tr.appendChild(toggleCell);
     wireInputs(tr);
@@ -1174,7 +1181,6 @@
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
     
     patchAddButton();
-
     enhanceAll(); 
     hideHeader(); 
     
