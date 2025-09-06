@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>حاسبة الراتب والمصاريف (v5 - مصحح)</title>
+  <title>حاسبة الراتب والمصاريف (v5 - معدل)</title>
   <style>
     body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:#0b0f14;color:#e9eef5;margin:0;padding:20px}
     h1{margin-bottom:16px;font-size:1.4rem;color:#fff}
@@ -41,8 +41,6 @@
     .status.غير-مدفوع{color:#1e90ff}
     .status.دخل{color:#60a5fa}
 
-    .mark{display:inline-block;margin-inline-start:8px;padding:2px 8px;border-radius:999px;font-size:.8rem;border:1px solid #2a3a52;background:#0f141c;color:#9cc2ff}
-
     .sub-table{margin-top:8px;border:1px solid #2a3a52;border-radius:10px;width:100%}
     .sub-table th{background:#1a2230;color:#9cc2ff}
     .sub-table td{background:#141c26}
@@ -59,6 +57,40 @@
     width:100%; max-width:100vw;
     overflow-x:hidden;
   }
+  
+  /* ## التعديل الأول هنا: إخفاء رأس جدول الدخل الإضافي وتنسيق صفوفه ## */
+  #extras-table thead {
+    display: none;
+  }
+  #extras-rows tr {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    width: 90vw;
+    margin: 10px auto;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    align-items: center;
+  }
+  #extras-rows td {
+    border: none;
+    padding: 0;
+    text-align: right;
+  }
+  #extras-rows td:nth-child(1) {
+    font-weight: bold;
+    color: #fff;
+  }
+  #extras-rows td input {
+    max-width: 120px;
+    text-align: end;
+  }
+  /* نهاية التعديل الأول */
+
+
   #rows {
     width:100%; max-width:100vw;
     table-layout: auto;
@@ -218,7 +250,7 @@
     <label>قيمة الدخل</label>
     <input id="extra-amount" type="number" />
     <button id="add-extra" class="primary" style="margin-top:10px">➕ إضافة دخل</button>
-    <table class="main-table">
+    <table class="main-table" id="extras-table">
       <thead>
         <tr>
           <th>دخل</th>
@@ -245,9 +277,7 @@
     </div>
     <label>المبلغ المخطط</label><input id="planned" type="number" />
     <label>المدفوع حتى الآن</label><input id="paid" type="number" />
-    
     <button id="add" type="button" class="primary" style="margin-top:12px">➕ إضافة بند</button>
-
     <table class="main-table">
       <thead>
         <tr>
@@ -456,6 +486,8 @@
       state.items.forEach((it)=>{
         const st=statusOf(it);
         const tr=document.createElement('tr');
+        
+        /* ## التعديل الثاني هنا: إزالة السطر الذي يحتوي على paid-mark ## */
         tr.innerHTML=`
           <td><input type="text" value="${it.name||''}" class="name-input"></td>
           <td class="col-planned"><input type="number" value="${it.planned||0}" class="planned-input"></td>
@@ -464,29 +496,29 @@
           <td class="status ${st.cls}">${st.text}</td>
           <td>
             <button class="primary pay-one">تم الدفع</button>
-            <span class="mark paid-mark" style="display:${st.text==='مدفوع'?'inline-block':'none'}">تم الدفع</span>
             <button class="ghost sub-btn">➕ تفصيل</button>
             <button class="danger del">حذف</button>
           </td>
         `;
+
         const nameInp=tr.querySelector('.name-input');
         const pInp=tr.querySelector('.planned-input');
         const paInp=tr.querySelector('.paid-input');
         const dueCell=tr.querySelector('.due');
         const statusCell=tr.querySelector('.status');
         const payBtn=tr.querySelector('.pay-one');
-        const paidMark=tr.querySelector('.paid-mark');
         const delBtn=tr.querySelector('.del');
         const subBtn=tr.querySelector('.sub-btn');
         if(!it.subItems) it.subItems=[];
+
         function refreshRow(){
           const st=statusOf(it);
           dueCell.textContent=Math.max(0,(+it.planned||0)-(+it.paid||0));
           statusCell.textContent=st.text;
           statusCell.className='status '+st.cls;
-          paidMark.style.display = (st.text==='مدفوع') ? 'inline-block' : 'none';
           updateTotals(); persist();
         }
+
         nameInp.addEventListener('input',e=>{ it.name=normalizeCat(e.target.value); persist(); });
         pInp.addEventListener('input',e=>{ it.planned=+e.target.value||0; refreshRow(); });
         paInp.addEventListener('input',e=>{ it.paid=+e.target.value||0; refreshRow(); });
@@ -888,7 +920,6 @@
       });
       $('delete-cat').addEventListener('click', deleteSelectedCat);
       
-      // ## التعديل هنا: تم تبسيط ربط الحدث ##
       $('add').addEventListener('click', (e) => {
         e.preventDefault();
         addItem();
@@ -1102,13 +1133,6 @@
     }catch(e){}
   }
   
-  // This function is no longer needed as we fixed the root cause
-  /*
-  function patchAddButton(){
-    // ...
-  }
-  */
-
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
     enhanceAll(); hideHeader();
