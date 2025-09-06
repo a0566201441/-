@@ -146,6 +146,8 @@
     padding: 10px 12px;
     align-items:start;
     overflow:hidden;
+    /* ## التعديل هنا: تم تقليل أقل ارتفاع للبطاقة ## */
+    min-height: 340px;
   }
   #rows thead, #rows th { display: none !important; }
   #rows td:nth-child(1) { grid-area: name; }
@@ -175,12 +177,11 @@
     display:flex; flex-direction: column; align-items: center; text-align:center;
   }
   
-  /* ## التعديل هنا: تم تكبير خانات الأرقام لتثبيت العرض ## */
   #rows td:nth-child(1) input { width: 100%; max-width: 100%; margin: 0 auto; }
   #rows td:nth-child(2) input, 
   #rows td:nth-child(3) input, 
   #rows td:nth-child(4) input {
-    width: 100%; /* تم تغيير القيمة لتملأ الخانة */
+    width: 100%;
     max-width: 100%; 
     text-align:end; 
     margin: 0 auto;
