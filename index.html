@@ -64,7 +64,7 @@
     overflow-x:hidden;
   }
   
-  /* تعديل: تنسيق بطاقات الدخل الإضافي وإخفاء الرأس للجوال */
+  /* --- تعديلات قسم الدخل الإضافي --- */
   #extras-table thead {
     display: none;
   }
@@ -88,13 +88,15 @@
   #extras-rows td:nth-child(1) {
     font-weight: bold;
     color: #fff;
+    overflow-wrap: break-word; /* يضمن عدم خروج النص الطويل عن الحدود */
   }
-  /* تعديل: تقصير عرض حقل المبلغ لمنع الحركة الأفقية */
+  /* تعديل 1: تصغير عرض حقل المبلغ لمنع الحركة الأفقية */
   #extras-rows .extra-amount-input {
     width: 90px; 
   }
   
-  /* تعديل: تنسيق بطاقات الاستثمارات وإخفاء الرأس للجوال */
+  /* --- تعديلات قسم الاستثمارات --- */
+  /* تعديل 3: تطبيق تصميم البطاقات على قسم الاستثمارات */
   #investments-table thead {
       display: none;
   }
@@ -119,16 +121,16 @@
   #inv-rows td:nth-child(2) { grid-area: dest; }
   #inv-rows td:nth-child(3) { grid-area: amount; }
   #inv-rows td:nth-child(4) { grid-area: source; }
-  #inv-rows td:nth-child(5) { display: none; } /* إخفاء خانة الشهر غير الضرورية للجوال */
+  #inv-rows td:nth-child(5) { display: none; }
   #inv-rows td:nth-child(6) { grid-area: notes; }
   #inv-rows td:nth-child(7) { grid-area: delete; }
   #inv-rows input, #inv-rows textarea { width: 100%; }
   #inv-rows td:nth-child(7) button { width: 100%; }
 
-  /* تعديل: تثبيت عرض جدول المصروفات الرئيسي لمنع تغير حجمه */
+  /* --- تعديلات قسم المصروفات --- */
+  /* تعديل 2: إلغاء table-layout:fixed لإصلاح عرض بطاقة المصروف */
   #rows {
     width:100%;
-    table-layout: fixed; /* هذا السطر يثبت العرض */
     border-spacing: 0;
     border-collapse: separate;
     direction: rtl;
