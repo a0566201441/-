@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>حاسبة الراتب والمصاريف (v5 - نهائي)</title>
   <style>
-    /* ## التعديل الأول هنا: إضافة قاعدة لضمان ثبات الأحجام ## */
     * {
       box-sizing: border-box;
     }
@@ -57,15 +56,15 @@
 
 <style id="mobile-v29">
 @media (max-width: 430px) {
-  /* ## التعديل الثاني هنا: إضافة إطار حول محتوى الصفحة ## */
   html, body {
     margin:0;
-    padding: 10px; /* تم تغيير القيمة من 0 إلى 10px */
+    padding: 10px;
     width:100%;
     max-width:100vw;
     overflow-x:hidden;
   }
   
+  /* تعديل: تنسيق بطاقات الدخل الإضافي وإخفاء الرأس للجوال */
   #extras-table thead {
     display: none;
   }
@@ -73,7 +72,7 @@
     display: grid;
     grid-template-columns: 1fr auto auto;
     gap: 10px;
-    width: 100%; /* تم تغيير القيمة من 90vw إلى 100% لتناسب الإطار الجديد */
+    width: 100%;
     margin: 10px auto;
     padding: 15px;
     border-radius: 12px;
@@ -90,22 +89,53 @@
     font-weight: bold;
     color: #fff;
   }
-  #extras-rows td input {
-    max-width: 120px;
-    text-align: end;
+  /* تعديل: تقصير عرض حقل المبلغ لمنع الحركة الأفقية */
+  #extras-rows .extra-amount-input {
+    width: 90px; 
   }
+  
+  /* تعديل: تنسيق بطاقات الاستثمارات وإخفاء الرأس للجوال */
+  #investments-table thead {
+      display: none;
+  }
+  #inv-rows tr {
+      display: grid;
+      width: 100%;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+          "type   dest"
+          "amount source"
+          "notes  notes"
+          "delete delete";
+  }
+  #inv-rows td { border: none; padding: 0; }
+  #inv-rows td:nth-child(1) { grid-area: type; }
+  #inv-rows td:nth-child(2) { grid-area: dest; }
+  #inv-rows td:nth-child(3) { grid-area: amount; }
+  #inv-rows td:nth-child(4) { grid-area: source; }
+  #inv-rows td:nth-child(5) { display: none; } /* إخفاء خانة الشهر غير الضرورية للجوال */
+  #inv-rows td:nth-child(6) { grid-area: notes; }
+  #inv-rows td:nth-child(7) { grid-area: delete; }
+  #inv-rows input, #inv-rows textarea { width: 100%; }
+  #inv-rows td:nth-child(7) button { width: 100%; }
 
+  /* تعديل: تثبيت عرض جدول المصروفات الرئيسي لمنع تغير حجمه */
   #rows {
     width:100%;
-    max-width:100vw;
-    table-layout: auto;
-    border-collapse: separate;
+    table-layout: fixed; /* هذا السطر يثبت العرض */
     border-spacing: 0;
+    border-collapse: separate;
     direction: rtl;
   }
   #rows tr {
     display:grid;
-    width: 100%; /* تم تغيير القيمة من 90vw إلى 100% لتناسب الإطار الجديد */
+    width: 100%;
     margin: 10px auto;
     grid-template-areas:
       "name   planned"
@@ -281,7 +311,7 @@
     <label>المبلغ المخطط</label><input id="planned" type="number" />
     <label>المدفوع حتى الآن</label><input id="paid" type="number" />
     <button id="add" type="button" class="primary" style="margin-top:12px">➕ إضافة بند</button>
-    <table class="main-table">
+    <table class="main-table" id="rows">
       <thead>
         <tr>
           <th>المصروف</th><th class="col-planned">المخطط</th><th class="col-paid">المدفوع</th><th class="col-due">المتبقي</th><th>الحالة</th><th>إجراءات</th>
@@ -317,7 +347,7 @@
     <label>ملاحظات / تفاصيل إضافية (اختياري)</label>
     <textarea id="inv-notes" placeholder="تفاصيل مثل: التاريخ، الوسيط، رسوم..."></textarea>
     <button id="add-inv" class="primary" style="margin-top:12px">➕ إضافة استثمار</button>
-    <table class="main-table">
+    <table class="main-table" id="investments-table">
       <thead>
         <tr>
           <th>النوع</th><th>الوجهة</th><th class="col-paid">المبلغ</th><th>المصدر</th><th>الشهر</th><th>تفاصيل</th><th>إجراء</th>
