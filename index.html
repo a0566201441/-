@@ -334,14 +334,14 @@
         display: grid;
         width: 100%;
         margin: 10px auto;
-        grid-template-areas: "name     name    actions""planned  paid    due""status   status  status""detailsInput detailsToggle detailsToggle""detailsPanel detailsPanel detailsPanel";
-        grid-template-columns: 1fr 1fr 90px;
+        grid-template-areas: "name   planned""paid   due""status actions""detailsInput detailsToggle""detailsPanel detailsPanel";
+        grid-template-columns: 1fr 1fr;
         column-gap: 10px;
-        row-gap: 12px;
+        row-gap: 6px; /* تقليل الفراغ بين الصفوف */
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
-        padding: 12px;
+        padding: 10px 12px;
         align-items: start;
         overflow: hidden;
       }
@@ -369,40 +369,36 @@
       }
       #rows td {
         position: relative;
-        padding: 0;
+        padding: 4px; /* تقليل الحشوة */
         min-width: 0;
       }
       #rows td::before {
         display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: #cbd5e1;
-        text-align: right;
+        font-size: 0.9rem;
+        font-weight: 700;
+        opacity: .95;
+        margin-bottom: 4px; /* تقليل المسافة */
+        line-height: 1.15;
+        color: #fff;
+        text-align: center;
       }
       #rows td:nth-child(1)::before {
         content: "المصروف";
-        text-align: right;
       }
       #rows td:nth-child(2)::before {
         content: "المخطط";
-        text-align: center;
       }
       #rows td:nth-child(3)::before {
         content: "المدفوع";
-        text-align: center;
       }
       #rows td:nth-child(4)::before {
         content: "المتبقي";
-        text-align: center;
       }
       #rows td:nth-child(5)::before {
         content: "الحالة";
-        text-align: right;
       }
       #rows td:nth-child(6)::before {
         content: "الإجراءات";
-        text-align: center;
       }
       #rows input,
       #rows select,
@@ -412,24 +408,34 @@
         padding: 8px 10px;
         min-width: 0;
       }
-      #rows td:nth-child(1) {
-        align-items: flex-start;
-      }
-      #rows td:nth-child(1) input {
-        text-align: right;
-      }
+      #rows td:nth-child(1),
       #rows td:nth-child(2),
       #rows td:nth-child(3),
-      #rows td:nth-child(4),
-      #rows td:nth-child(6) {
+      #rows td:nth-child(4) {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
       }
-      #rows td:nth-child(5) {
-        text-align: right;
-        padding-right: 5px;
+      #rows td:nth-child(1) input {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+      #rows td:nth-child(2) input,
+      #rows td:nth-child(3) input,
+      #rows td:nth-child(4) input {
+        width: 100%;
+        max-width: 100%;
+        text-align: end;
+        margin: 0 auto;
+      }
+      #rows td:nth-child(6) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
       }
       .action-buttons {
         display: flex;
@@ -439,8 +445,9 @@
       }
       #rows td:nth-child(6) .btn,
       #rows td:nth-child(6) button {
-        padding: 8px 6px;
-        font-size: 0.9rem;
+        padding: 8px 10px;
+        line-height: 1.2;
+        font-size: 0.95rem;
       }
       #rows td:nth-child(6) .is-details-btn {
         display: none !important;
@@ -471,21 +478,29 @@
         -webkit-appearance: none;
         appearance: none;
       }
+
+      /* --- ✨ الإصلاح الرئيسي للفراغ السفلي --- */
       #rows td.mobile-details-panel {
         grid-area: detailsPanel;
         border: 1px dashed rgba(255, 255, 255, 0.15);
         border-radius: 10px;
-        padding: 10px;
         width: 100%;
-        transition: opacity 0.2s, visibility 0.2s;
+        transition: all 0.25s ease-in-out;
         visibility: hidden;
         opacity: 0;
-        min-height: 120px;
+        max-height: 0; /* يجعل العنصر يتقلص تماماً عند إخفائه */
+        padding: 0 10px; /* إزالة الحشوة العمودية عند إخفائه */
+        overflow: hidden; /* ضروري لعملية التقلص */
+        min-height: 0; /* إلغاء الحد الأدنى للارتفاع عند إخفائه */
       }
       #rows td.mobile-details-panel.visible {
         visibility: visible;
         opacity: 1;
+        max-height: 500px; /* السماح له بالتمدد */
+        padding: 10px; /* إعادة الحشوة عند ظهوره */
+        min-height: 120px; /* إعادة الحد الأدنى للارتفاع عند ظهوره */
       }
+
       #rows td.mobile-details-panel .placeholder {
         opacity: .8;
         font-size: .95rem;
@@ -1980,3 +1995,4 @@
   </script>
 </body>
 </html>
+
