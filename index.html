@@ -64,13 +64,12 @@
     overflow-x:hidden;
   }
   
-  /* --- تعديلات قسم الدخل الإضافي --- */
   #extras-table thead {
     display: none;
   }
   #extras-rows tr {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr 90px auto; 
     gap: 10px;
     width: 100%;
     margin: 10px auto;
@@ -88,15 +87,9 @@
   #extras-rows td:nth-child(1) {
     font-weight: bold;
     color: #fff;
-    overflow-wrap: break-word; /* يضمن عدم خروج النص الطويل عن الحدود */
-  }
-  /* تعديل 1: تصغير عرض حقل المبلغ لمنع الحركة الأفقية */
-  #extras-rows .extra-amount-input {
-    width: 90px; 
+    overflow-wrap: break-word;
   }
   
-  /* --- تعديلات قسم الاستثمارات --- */
-  /* تعديل 3: تطبيق تصميم البطاقات على قسم الاستثمارات */
   #investments-table thead {
       display: none;
   }
@@ -127,8 +120,6 @@
   #inv-rows input, #inv-rows textarea { width: 100%; }
   #inv-rows td:nth-child(7) button { width: 100%; }
 
-  /* --- تعديلات قسم المصروفات --- */
-  /* تعديل 2: إلغاء table-layout:fixed لإصلاح عرض بطاقة المصروف */
   #rows {
     width:100%;
     border-spacing: 0;
@@ -319,7 +310,7 @@
           <th>المصروف</th><th class="col-planned">المخطط</th><th class="col-paid">المدفوع</th><th class="col-due">المتبقي</th><th>الحالة</th><th>إجراءات</th>
         </tr>
       </thead>
-      <tbody id="rows"></tbody>
+      <tbody></tbody>
     </table>
     <div class="totals">
       <div><div class="pill">إجمالي المخطط</div><h3 id="t_planned">0</h3></div>
@@ -517,7 +508,7 @@
       const sal2=$('salary2'); if(sal2) sal2.value = state.salary ? state.salary : '';
     }
     function renderExpenses(){
-      const tb=$('rows'); tb.innerHTML='';
+      const tb=$('rows').querySelector('tbody'); tb.innerHTML='';
       state.items.forEach((it)=>{
         const st=statusOf(it);
         const tr=document.createElement('tr');
@@ -665,7 +656,11 @@
       renderInvestments(); persist();
       alert('تمت إضافة الاستثمار ✅');
     }
-    
+    function addItemInline(e){
+      try{ if(e){ e.preventDefault(); e.stopPropagation(); } }catch{}
+      try{ addItem(); }catch(err){ try{ console && console.error && console.error(err); }catch{} }
+      return false;
+    }
     function addItem(){
       try{ if(document.activeElement) document.activeElement.blur(); }catch{}
       const selEl = $('name'); const selVal = selEl && selEl.value ? selEl.value : '';
@@ -954,11 +949,8 @@
       });
       $('delete-cat').addEventListener('click', deleteSelectedCat);
       
-      $('add').addEventListener('click', (e) => {
-        e.preventDefault();
-        addItem();
-      });
-
+      // $('add') is handled by mobile-enhance script
+      
       $('add-extra').addEventListener('click', addExtra);
       $('add-inv').addEventListener('click', addInvestment);
       $('save-template').addEventListener('click', saveCurrentAsTemplate);
@@ -1115,7 +1107,7 @@
       el.className = 'mobile-status-text over';
       el.textContent = 'تجاوز المخطط بـ ' + diff;
     } else if (planned > paid){
-      var left = (planned - paid).toFixed(2).replace(/\.00$/,'');
+      var left = (planned - planned).toFixed(2).replace(/\.00$/,'');
       el.className = 'mobile-status-text ok';
       el.textContent = 'المتبقي ' + left;
     } else {
@@ -1156,25 +1148,55 @@
     tr.setAttribute('data-mobile-enhanced','1');
   }
   function enhanceAll(){
-    var table = document.getElementById('rows'); if(!table) return;
-    var rows = table.querySelectorAll('tbody tr');
+    var tableBody = document.getElementById('rows').querySelector('tbody'); 
+    if(!tableBody) return;
+    var rows = tableBody.querySelectorAll('tr');
     rows.forEach(enhanceRow);
   }
   function hideHeader(){
     try{
       var table = document.getElementById('rows'); if(!table) return;
-      var prev = table.previousElementSibling; if (prev) prev.style.display = 'none';
+      var thead = table.querySelector('thead'); if (thead) thead.style.display = 'none';
     }catch(e){}
   }
   
+  function patchAddButton(){
+    var btn = document.getElementById('add');
+    if (!btn) return;
+    var clone = btn.cloneNode(true);
+    clone.removeAttribute('onclick');
+    clone.removeAttribute('ontouchend');
+    if (btn.parentNode) btn.parentNode.replaceChild(clone, btn);
+
+    function handler(e){
+      try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+      if (clone.dataset.adding === '1') return false;
+      clone.dataset.adding = '1';
+      try {
+        if (typeof window.addItem === 'function') return window.addItem();
+      } finally {
+        setTimeout(function(){ clone.dataset.adding = '0'; }, 300);
+      }
+      return false;
+    }
+    clone.addEventListener('click', handler, {passive:false});
+  }
+
   function install(){
     if (!window.matchMedia || !window.matchMedia('(max-width: 430px)').matches) return;
-    enhanceAll(); hideHeader();
-    var table = document.getElementById('rows');
-    if (table){
-      var tb = table.querySelector('tbody') || table;
-      var obs = new MutationObserver(function(){ enhanceAll(); });
-      obs.observe(tb, { childList: true, subtree: true });
+    enhanceAll(); 
+    hideHeader(); 
+    patchAddButton();
+    var tableBody = document.getElementById('rows').querySelector('tbody');
+    if (tableBody){
+      var obs = new MutationObserver(function(mutations){
+          mutations.forEach(function(mutation) {
+              if (mutation.addedNodes.length) {
+                  enhanceAll();
+              }
+          });
+      });
+      obs.observe(tableBody, { childList: true });
     }
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
@@ -1185,3 +1207,4 @@
 </script>
 </body>
 </html>
+
